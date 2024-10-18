@@ -63,6 +63,8 @@ nlog.config
 **/appsettings.Local.json
 appsettings.json
 TaskManager/appsettings.json
+appsettings.Development.json
+TaskManager/appsettings.Development.json
 
 # JetBrains Rider
 .idea/

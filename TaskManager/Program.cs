@@ -3,6 +3,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Start session handling on the server
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromSeconds(600);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// For accessing session data in the views
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
