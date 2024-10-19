@@ -1,0 +1,44 @@
+@model TaskManager.ViewModels.SignUpViewModel
+
+@{
+    ViewData["Title"] = "Sign Up";
+    var message = ViewData["Message"] as string;
+}
+
+<h1>Sign up</h1>
+
+@if (!string.IsNullOrEmpty(message)) {<p class="text-danger">@ViewData["Message"]</p>}
+@if (ViewBag.error != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.error
+    </div>
+}
+
+<form asp-action="Signup">
+    <label>Username:</label>
+    <input type="text" asp-for="UserName" />
+    <!-- Display validation message for the username field -->
+    <span asp-validation-for="UserName" class="text-danger"></span>
+    <br/>
+
+    <label>Email:</label>
+    <input type="email" asp-for="Email" />
+    <!-- Display validation message for the email field -->
+    <span asp-validation-for="Email" class="text-danger"></span>
+    <br/>
+
+    <label>Password:</label>
+    <input type="password" asp-for="Password"/>
+    <span asp-validation-for="Password" class="text-danger"></span>
+    <br/>
+    
+    <label>Repeat password:</label>
+    <input type="password" asp-for="ConfirmPassword"/>
+    <!-- Display validation message for the Name field -->
+    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
+    <br/>
+    <input type="submit" value="Submit"/>
+
+</form>
