@@ -52,8 +52,8 @@ namespace TaskManager.Models.Stores
         // 5. FindByNameAsync: Placeholder, returning null
         public Task<UserModel?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            // Implement user lookup by name here later
-            return Task.FromResult<UserModel?>(null);
+            var user = _userMethods.GetUserByUserName(normalizedUserName);
+            return Task.FromResult<UserModel?>(user);
         }
 
         // 6. Dispose: placeholder

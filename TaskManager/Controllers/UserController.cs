@@ -64,7 +64,7 @@ namespace TaskManager.Controllers
                 // Optional: Automatically sign in the user after registration
                 // await _signInManager.SignInAsync(user, isPersistent: false);
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Login", "User");
             }
 
             // Add errors to the ModelState
@@ -92,12 +92,16 @@ namespace TaskManager.Controllers
         {
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("Modelstat invalid, login");
                 return View(model);
             }
+
+            Console.WriteLine("Before calling PasswordSignInAsync");
 
             var result = await _signInManager.PasswordSignInAsync(
                 model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 
+            Console.WriteLine($"Result: {result}");
             if (result.Succeeded)
             {
                 return RedirectToAction("Index", "Home");

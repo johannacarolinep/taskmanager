@@ -1,36 +1,47 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using TaskManager.Models;
-using TaskManager.Models.Stores;
 using TaskManager.Models.Services;
+using TaskManager.Models.Stores;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
-
-// Custom services
+// Register your custom services
 builder.Services.AddScoped<IUserStore<UserModel>, UserStore>();
 builder.Services.AddScoped<IPasswordHasher<UserModel>, PasswordHasher<UserModel>>();
-builder.Services.AddScoped<UserMethods>();
+builder.Services.AddScoped<UserMethods>(); // Register UserMethods
+
+// Register TimeProvider (if necessary)
+builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
 
 // Configure Identity without roles
 builder.Services.AddIdentityCore<UserModel>(options =>
 {
     // Configure identity options if needed
 })
-.AddUserStore<UserStore>()
-.AddSignInManager<SignInManager<UserModel>>()
-.AddDefaultTokenProviders();
+    .AddUserStore<UserStore>()
+    .AddSignInManager<SignInManager<UserModel>>() // Explicitly add SignInManager
+    .AddDefaultTokenProviders();
 
-// Configure authentication cookie
-builder.Services.ConfigureApplicationCookie(options =>
+// Configure authentication services
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
+.AddCookie(IdentityConstants.ApplicationScheme, options =>
 {
     options.LoginPath = "/User/Login";
     options.AccessDeniedPath = "/User/AccessDenied";
-});
+})
+.AddCookie(IdentityConstants.ExternalScheme)
+.AddCookie(IdentityConstants.TwoFactorRememberMeScheme)
+.AddCookie(IdentityConstants.TwoFactorUserIdScheme);
 
 // Start session handling on the server
 builder.Services.AddDistributedMemoryCache();
@@ -60,9 +71,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseSession();
+app.UseSession(); // Add session middleware
 
-app.UseAuthentication();
+app.UseAuthentication(); // Ensure this is before UseAuthorization
 app.UseAuthorization();
 
 app.MapControllerRoute(

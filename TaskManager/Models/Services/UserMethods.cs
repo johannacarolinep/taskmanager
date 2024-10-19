@@ -115,18 +115,18 @@ namespace TaskManager.Models.Services
         /// <summary>
         /// Retrieves a user from the database by their normalized username.
         /// </summary>
-        /// <param name="normalizedUserName">The normalized username of the user to retrieve.</param>
+        /// <param name="userName">The normalized username of the user to retrieve.</param>
         /// <returns>A UserModel object if found; otherwise, null.</returns>
-        public UserModel GetUserByNormalizedUserName(string normalizedUserName)
+        public UserModel? GetUserByUserName(string userName)
         {
             try
             {
                 using (SqlConnection dbConnection = GetOpenConnection())
                 {
-                    string sql = "SELECT * FROM Tbl_user WHERE NormalizedUserName = @NormalizedUserName";
+                    string sql = "SELECT * FROM Tbl_user WHERE LOWER(UserName) = LOWER(@UserName)";
                     using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection))
                     {
-                        dbCommand.Parameters.Add("@NormalizedUserName", SqlDbType.VarChar, 30).Value = normalizedUserName;
+                        dbCommand.Parameters.Add("@UserName", SqlDbType.VarChar, 30).Value = userName;
 
                         using (SqlDataReader reader = dbCommand.ExecuteReader())
                         {
@@ -140,8 +140,7 @@ namespace TaskManager.Models.Services
             }
             catch (Exception ex)
             {
-                // Log the exception or handle it as needed
-                Console.WriteLine($"Error in GetUserByNormalizedUserName: {ex.Message}");
+                Console.WriteLine($"Error in GetUserByUserName: {ex.Message}");
             }
             return null;
         }
@@ -157,7 +156,6 @@ namespace TaskManager.Models.Services
             {
                 Id = Convert.ToInt32(reader["Id"]),
                 UserName = reader["UserName"].ToString(),
-                NormalizedUserName = reader["NormalizedUserName"].ToString(),
                 Email = reader["Email"].ToString(),
                 PasswordHash = reader["PasswordHash"].ToString(),
                 CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),

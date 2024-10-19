@@ -25,9 +25,22 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Signup">Sign up</a>
-                        </li>
+                        
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <!-- Links visible to logged-in users -->
+                                <form asp-controller="User" asp-action="Logout" method="post" class="form-inline nav-item">
+                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
+                                </form>
+                                <span class="nav-item my-auto fw-bold">Logged in as: @User.Identity.Name</span>
+                            } else {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Signup">Sign up</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Log in</a>
+                                </li>
+                            }
                     </ul>
                 </div>
             </div>
