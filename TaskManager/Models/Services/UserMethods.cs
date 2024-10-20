@@ -83,7 +83,7 @@ namespace TaskManager.Models.Services
         /// </summary>
         /// <param name="userId">The ID of the user to retrieve.</param>
         /// <returns>A UserModel object if found; otherwise, null.</returns>
-        public UserModel GetUserById(string userId)
+        public async Task<UserModel?> GetUserByIdAsync(string userId)
         {
             try
             {

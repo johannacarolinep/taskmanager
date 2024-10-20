@@ -1,0 +1,49 @@
+@model TaskManager.ViewModels.AccountCenterViewModel
+
+<h1>Account Center</h1>
+<p>Manage your account settings.</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<!-- Update Username Form -->
+<h2>Update Username</h2>
+<form asp-action="UpdateUsername" method="post">
+    <p>Current username: @Model.CurrentUserName</p>
+    <input type="text" asp-for="NewUserName" placeholder="New Username" required />
+    <input type="submit" value="Update Username" />
+    <span asp-validation-for="NewUserName" class="text-danger"></span>
+</form>
+
+<!-- Update Email Form -->
+<h2>Update Email</h2>
+<form asp-action="UpdateEmail" method="post">
+    <p>Current email: @Model.CurrentEmail</p>
+    <input type="email" asp-for="NewEmail" placeholder="New Email" required />
+    
+    <input type="submit" value="Update Email" />
+    <span asp-validation-for="NewEmail" class="text-danger"></span>
+</form>
+
+<!-- Update Password Form -->
+<h2>Update Password</h2>
+<form asp-action="UpdatePassword" method="post">
+    <input type="password" asp-for="CurrentPassword" placeholder="Current Password" required />
+    <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+    <input type="password" asp-for="NewPassword" placeholder="New Password" required />
+    <span asp-validation-for="NewPassword" class="text-danger"></span>
+    <input type="password" asp-for="ConfirmNewPassword" placeholder="Confirm New Password" required />
+    <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+    <input type="submit" value="Update Password" />
+</form>
+
+<!-- Upload Profile Image Form -->
+<h2>Upload Profile Image</h2>
+<form asp-action="UploadProfileImage" method="post" enctype="multipart/form-data">
+    <input type="file" asp-for="ProfileImage" accept="image/*" required />
+    <input type="submit" value="Upload Image" />
+</form>
+
+

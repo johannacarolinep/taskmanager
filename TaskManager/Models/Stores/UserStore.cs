@@ -55,10 +55,10 @@ namespace TaskManager.Models.Stores
         }
 
         // 4. FindByIdAsync: Placeholder, returning null
-        public Task<UserModel?> FindByIdAsync(string userId, CancellationToken cancellationToken)
+        public async Task<UserModel?> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             // Implement user lookup by ID here later
-            return Task.FromResult<UserModel?>(null);
+            return await _userMethods.GetUserByIdAsync(userId);
         }
 
         // 5. FindByNameAsync: Placeholder, returning null
