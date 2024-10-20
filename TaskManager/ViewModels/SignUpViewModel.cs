@@ -6,16 +6,14 @@ public class SignUpViewModel
 {
 
     [Required(ErrorMessage = "Username is required")]
-    [StringLength(30, ErrorMessage = "Username cannot be longer than 30 characters.")]
+    [StringLength(30, MinimumLength = 1, ErrorMessage = "Username must be between 1 and 30 characters.")]
     public string? UserName { get; set; }
 
     [Required(ErrorMessage = "Email is required")]
-    [EmailAddress(ErrorMessage = "Must be a valid email address")]
-    [StringLength(100, ErrorMessage = "Email cannot be longer than 100 characters.")]
+    [StringLength(100, ErrorMessage = "Email must be below 100 characters.")]
     public string? Email { get; set; }
 
     [Required(ErrorMessage = "Password is required")]
-    [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be 8-100 characters long")]
     [DataType(DataType.Password)]
     public string? Password { get; set; }
 

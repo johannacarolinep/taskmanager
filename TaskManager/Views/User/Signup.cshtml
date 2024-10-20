@@ -2,18 +2,11 @@
 
 @{
     ViewData["Title"] = "Sign Up";
-    var message = ViewData["Message"] as string;
 }
 
 <h1>Sign up</h1>
 
-@if (!string.IsNullOrEmpty(message)) {<p class="text-danger">@ViewData["Message"]</p>}
-@if (ViewBag.error != null)
-{
-    <div class="alert alert-danger">
-        @ViewBag.error
-    </div>
-}
+<div asp-validation-summary="All" class="text-danger"></div>
 
 <form asp-action="Signup">
     <label>Username:</label>

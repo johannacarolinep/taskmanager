@@ -22,6 +22,12 @@ builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
 builder.Services.AddIdentityCore<UserModel>(options =>
 {
     // Configure identity options if needed
+    options.Password.RequireDigit = true; // Require a digit
+    options.Password.RequireLowercase = true; // Require lowercase letter
+    options.Password.RequireUppercase = false; // Don't require uppercase
+    options.Password.RequiredLength = 8; // Minimum length of 8 characters
+    options.Password.RequireNonAlphanumeric = false; // Don't require special characters
+    options.User.RequireUniqueEmail = true;
 })
     .AddUserStore<UserStore>()
     .AddSignInManager<SignInManager<UserModel>>() // Explicitly add SignInManager

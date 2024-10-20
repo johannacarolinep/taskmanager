@@ -35,15 +35,9 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Signup(SignUpViewModel tempUser)
         {
+            
             if (!ModelState.IsValid)
             {
-                ViewData["Message"] = "Validation failed (modelstate or custom validation failed)";
-                return View(tempUser);
-            }
-
-            if (tempUser.Password == null) 
-            {
-                ModelState.AddModelError("Password", "Password cannot be null");
                 return View(tempUser);
             }
 
@@ -56,14 +50,8 @@ namespace TaskManager.Controllers
 
             var result = await _userManager.CreateAsync(user, tempUser.Password);
 
-            Console.WriteLine("AFTER CREATEASYNC");
-            Console.WriteLine($"result: {result}");
-
             if (result.Succeeded)
             {
-                // Optional: Automatically sign in the user after registration
-                // await _signInManager.SignInAsync(user, isPersistent: false);
-
                 return RedirectToAction("Login", "User");
             }
 
@@ -75,6 +63,7 @@ namespace TaskManager.Controllers
 
             return View(tempUser);
         }
+
 
         [HttpGet]
         public IActionResult Login()
@@ -96,25 +85,27 @@ namespace TaskManager.Controllers
                 return View(model);
             }
 
-            Console.WriteLine("Before calling PasswordSignInAsync");
-
             var result = await _signInManager.PasswordSignInAsync(
                 model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 
             Console.WriteLine($"Result: {result}");
             if (result.Succeeded)
             {
+                // Fetch the current user from the UserManager
+                var user = await _userManager.FindByNameAsync(model.UserName);
+
+                if (user != null) {
+                    // Update the LastLogin field with the current time
+                    user.LastLogin = DateTime.Now;
+
+                    // Update the user record in the database
+                    await _userManager.UpdateAsync(user);
+                }
+
                 return RedirectToAction("Index", "Home");
             }
 
-            if (result.IsLockedOut)
-            {
-                ModelState.AddModelError(string.Empty, "Account is locked out.");
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            }
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
 
             return View(model);
         }

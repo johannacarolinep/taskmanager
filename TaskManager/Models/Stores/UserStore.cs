@@ -5,7 +5,7 @@ using TaskManager.Models.Services;
 
 namespace TaskManager.Models.Stores
 {
-    public class UserStore : IUserStore<UserModel>, IUserPasswordStore<UserModel>
+    public class UserStore : IUserStore<UserModel>, IUserPasswordStore<UserModel>, IUserEmailStore<UserModel>
     {
         private readonly UserMethods _userMethods;
 
@@ -29,10 +29,22 @@ namespace TaskManager.Models.Stores
         }
 
         // 2. UpdateAsync: Not implemented yet, but returning a default IdentityResult
-        public Task<IdentityResult> UpdateAsync(UserModel user, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateAsync(UserModel user, CancellationToken cancellationToken)
         {
-            // Placeholder for future update logic
-            return Task.FromResult(IdentityResult.Success);
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            string errorMsg;
+            int result = _userMethods.UpdateUser(user, out errorMsg);
+
+            if (result > 0)
+            {
+                return IdentityResult.Success;
+            }
+
+            return IdentityResult.Failed(new IdentityError { Description = errorMsg });
         }
 
         // 3. DeleteAsync: Not implemented yet, returning a default IdentityResult
@@ -110,6 +122,51 @@ namespace TaskManager.Models.Stores
         public Task<bool> HasPasswordAsync(UserModel user, CancellationToken cancellationToken)
         {
             return Task.FromResult(!string.IsNullOrEmpty(user.PasswordHash));
-        } 
+        }
+
+
+        // Email store
+        public Task<string?> GetEmailAsync(UserModel user, CancellationToken cancellationToken)
+        {
+            // Assuming user.Email is already part of your UserModel
+            return Task.FromResult(user.Email);
+        }
+
+        public Task SetEmailAsync(UserModel user, string? email, CancellationToken cancellationToken)
+        {
+            user.Email = email;
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> GetEmailConfirmedAsync(UserModel user, CancellationToken cancellationToken)
+        {
+            // Implement if you track email confirmation
+            return Task.FromResult(true); // Return true if email confirmation is not implemented
+        }
+
+        public Task SetEmailConfirmedAsync(UserModel user, bool confirmed, CancellationToken cancellationToken)
+        {
+            // Implement email confirmation logic here
+            return Task.CompletedTask;
+        }
+
+        public Task<UserModel?> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+        {
+            // Implement logic to find a user by their email address using _userMethods
+            return _userMethods.FindByEmailAsync(normalizedEmail, cancellationToken);
+        }
+
+        public Task<string?> GetNormalizedEmailAsync(UserModel user, CancellationToken cancellationToken)
+        {
+            // Implement if you normalize emails (e.g., convert to lowercase)
+            return Task.FromResult(user.Email?.ToLower());
+        }
+
+        public Task SetNormalizedEmailAsync(UserModel user, string? normalizedEmail, CancellationToken cancellationToken)
+        {
+            // Implement logic to store normalized email (e.g., lowercase email)
+            user.Email = normalizedEmail?.ToLower();
+            return Task.CompletedTask;
+        }
     }
 }
