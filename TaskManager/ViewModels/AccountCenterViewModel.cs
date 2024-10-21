@@ -26,5 +26,5 @@ public class AccountCenterViewModel
     // For Profile Image Upload
     public IFormFile? ProfileImage { get; set; }
 
-    public string CurrentImage {get; set;}
+    public string? CurrentImage {get; set;}
 }

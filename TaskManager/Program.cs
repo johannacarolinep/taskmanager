@@ -1,11 +1,21 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using dotenv.net;
 using TaskManager.Models;
 using TaskManager.Models.Services;
 using TaskManager.Models.Stores;
 
+// Cloudinary credentials
+DotEnv.Load(options: new DotEnvOptions(probeForEnv: true));
+Cloudinary cloudinary = new Cloudinary(Environment.GetEnvironmentVariable("CLOUDINARY_URL"));
+cloudinary.Api.Secure = true;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton(cloudinary); // Register Cloudinary as a singleton service
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

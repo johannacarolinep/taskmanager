@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using TaskManager.Models;
 using TaskManager.ViewModels;
 
@@ -10,11 +12,13 @@ namespace TaskManager.Controllers
     {
         private readonly UserManager<UserModel> _userManager;
         private readonly SignInManager<UserModel> _signInManager;
+        private readonly Cloudinary _cloudinary;
 
-        public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager)
+        public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, Cloudinary cloudinary)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _cloudinary = cloudinary;
         }
 
         private bool IsLoggedIn()
@@ -312,6 +316,104 @@ namespace TaskManager.Controllers
             model.CurrentEmail = user.Email;            
 
             return View("AccountCenter", model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfileImage(AccountCenterViewModel model) {
+            // Ensure the user is logged in
+            if (!IsLoggedIn()) {
+                return RedirectToAction("Login");
+            }
+
+            // Ensure an image is selected
+            if (model.ProfileImage == null || model.ProfileImage.Length == 0) {
+                ModelState.AddModelError("ProfileImage", "Please select an image to upload.");
+                return View("AccountCenter", model); // Return the same view with errors - need to add back in the username etc
+            }
+
+            // Get the current user
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) {
+                return NotFound("User not found.");
+            }
+
+            // Temporarily store the old image url
+            var oldImageUrl = user.Image;
+
+            // Upload new image to cloudinary and update user
+            try {
+                // Upload the image to Cloudinary
+                var uploadResult = await UploadImageToCloudinary(model.ProfileImage);
+
+                // If the upload was successful, update the user's image URL
+                if (uploadResult != null && !string.IsNullOrEmpty(uploadResult.SecureUrl.ToString())) {
+
+                    user.Image = uploadResult.SecureUrl.ToString();
+                    var updateResult = await _userManager.UpdateAsync(user);
+
+                    // If the update was successful, delete the old image
+                    if (updateResult.Succeeded) {
+                        // delete old image from cloudinary, except default image
+                        var defaultImageUrl = "https://res.cloudinary.com/deceun0wd/image/upload/v1716381152/default_profile_shke8m.jpg";
+
+                        if (!string.IsNullOrEmpty(oldImageUrl) && oldImageUrl != defaultImageUrl) {
+                            var oldImagePublicId = GetCloudinaryPublicId(oldImageUrl);
+                            await DeleteImageFromCloudinary(oldImagePublicId);
+                        }
+
+                        TempData["SuccessMessage"] = "Profile image updated successfully.";
+                        return RedirectToAction("AccountCenter");
+                    }
+
+                    // Add any errors that occurred while updating the user record
+                    foreach (var error in updateResult.Errors) {
+                        ModelState.AddModelError("ProfileImage", error.Description);
+                    }
+                } else {
+                    ModelState.AddModelError("ProfileImage", "Failed to upload image.");
+                }
+            } catch (Exception ex) {
+                ModelState.AddModelError("ProfileImage", $"An error occurred: {ex.Message}");
+            }
+
+            // Return to the Account Center view with the model and errors
+            return View("AccountCenter", new AccountCenterViewModel {
+                CurrentUserName = user.UserName,
+                CurrentEmail = user.Email,
+                CurrentImage = oldImageUrl
+            });
+        }
+
+
+        private async Task<ImageUploadResult> UploadImageToCloudinary(IFormFile imageFile) {
+            // Convert IFormFile to a stream to upload to Cloudinary
+            var uploadResult = new ImageUploadResult();
+
+            if (imageFile.Length > 0) {
+                await using var stream = imageFile.OpenReadStream();
+
+                var uploadParams = new ImageUploadParams() {
+                    File = new FileDescription(imageFile.FileName, stream),
+                    Transformation = new Transformation().Width(200).Height(200).Crop("fill")
+                };
+
+                // Upload the image to Cloudinary
+                uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            }
+            return uploadResult;
+        }
+
+        private string GetCloudinaryPublicId(string imageUrl) {
+            // Extract the public ID from the URL
+            var fileName = imageUrl.Split('/').Last(); // Get file name with extension
+            return fileName.Substring(0, fileName.LastIndexOf('.')); // Return without file extension
+        }
+
+        private async Task<DeletionResult> DeleteImageFromCloudinary(string publicId) {
+            var deletionParams = new DeletionParams(publicId);
+            var result = await _cloudinary.DestroyAsync(deletionParams);
+            return result;
         }
 
     }
