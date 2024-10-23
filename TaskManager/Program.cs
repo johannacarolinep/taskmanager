@@ -10,7 +10,16 @@ using TaskManager.Models.Stores;
 
 // Cloudinary credentials
 DotEnv.Load(options: new DotEnvOptions(probeForEnv: true));
-Cloudinary cloudinary = new Cloudinary(Environment.GetEnvironmentVariable("CLOUDINARY_URL"));
+string cloudinaryUrl = Environment.GetEnvironmentVariable("CLOUDINARY_URL");
+
+// Check if the cloudinaryUrl is correctly loaded
+if (string.IsNullOrWhiteSpace(cloudinaryUrl))
+{
+    throw new ArgumentException("CLOUDINARY_URL is not set correctly.");
+}
+
+// Instantiate the Cloudinary object
+Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
 cloudinary.Api.Secure = true;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +29,7 @@ builder.Services.AddSingleton(cloudinary); // Register Cloudinary as a singleton
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Register your custom services
+// Custom services
 builder.Services.AddScoped<IUserStore<UserModel>, UserStore>();
 builder.Services.AddScoped<IPasswordHasher<UserModel>, PasswordHasher<UserModel>>();
 builder.Services.AddScoped<UserMethods>(); // Register UserMethods
