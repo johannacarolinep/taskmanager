@@ -2,9 +2,10 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+namespace TaskManager.Models;
 
 // Represents a tasklist in the system
-public class TaskListModel
+public class TasklistModel
 {
     [Key]
     public int Id { get; set; }
@@ -24,4 +25,8 @@ public class TaskListModel
 
     // Nullable foreign key relationship to UserModel (Tbl_User)
     public int? CreatedBy { get; set; }
+
+    public string? UserRole {get; set;}
+
+    public string? Contributors {get; set;}
 }

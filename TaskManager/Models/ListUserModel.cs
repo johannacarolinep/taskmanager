@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TaskManager.Models;
 
+namespace TaskManager.Models;
 
 public enum UserListRole
 {

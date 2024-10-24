@@ -1,0 +1,71 @@
+@model IEnumerable<TaskManager.Models.TasklistModel>
+
+@{
+    ViewData["Title"] = "My lists";
+}
+
+<h1>All of your tasklists</h1>
+
+<p>Logged in users can view all tasklists they are a contributor for, and create new tasklists.
+<p>
+    <a asp-action="Create">Create New Tasklist</a>
+</p>
+
+
+<!-- Sorting Links -->
+<div>
+    <a asp-action="Tasklists" asp-route-sortOrder="title" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Title</a> |
+    <a asp-action="Tasklists" asp-route-sortOrder="date" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Creation Date</a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any()) {
+            <tr>
+                <td colspan="3">
+                    <p>No results found</p>
+                </td>
+            </tr>
+        } else {
+            @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedAt)
+                </td>
+                <td>
+                    @if (item.UserRole == "Owner" || item.UserRole == "Admin") {
+                        <a asp-action="EditList" asp-route-listId="@item.Id">Edit list</a>
+                        <a asp-action="DeleteConfirmation" asp-route-listId="@item.Id" class="text-danger">Delete</a>
+                        <a asp-action="AddUser" asp-route-listId="@item.Id">Add contributor</a>
+                        <a asp-action="RemoveContributor" asp-route-listId="@item.Id">Remove contributor</a>
+                    } else {
+                        <a asp-action="LeaveList" asp-route-listId="@item.Id">Leave tasklist</a>
+                    }
+                    <span>List contributors: (@item.Contributors)</span>
+                </td>
+            </tr>
+        }
+        }
+        
+    </tbody>
+</table>
+
+@if (ViewBag.error != null) {
+    <div class="alert alert-danger">
+        @ViewBag.error
+    </div>
+}
