@@ -3,23 +3,29 @@ using Microsoft.AspNetCore.Authorization;
 using TaskManager.Models;
 using System.Security.Claims;
 using TaskManager.Models.Services;
+using TaskManager.Helpers;
 
 namespace TaskManager.Controllers;
 
 [Authorize]
 public class TasklistController : Controller {
 
+    private readonly TasklistMethods _tasklistMethods;
+
+    public TasklistController(TasklistMethods tasklistMethods) {
+        _tasklistMethods = tasklistMethods;
+    }
+
     public IActionResult Tasklists(string sortOrder) {
 
         List<TasklistModel> tasklists = new List<TasklistModel>();
 
         // Get the logged-in user's Id
-        string userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        int? userId = User.GetUserId();
 
-        if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int userId)) {
+        if (userId.HasValue) {
             // Fetch task lists
-            TasklistMethods tm = new TasklistMethods();
-            tasklists = tm.GetTasklistsForUser(userId);
+            tasklists = _tasklistMethods.GetTasklistsForUser(userId.Value);
         } else {
             // Handle case where user is not properly logged in or identity is misconfigured
             return RedirectToAction("Login", "User");
@@ -60,21 +66,18 @@ public class TasklistController : Controller {
         }
 
         // Get the logged-in user's Id
-        string userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        int? userId = User.GetUserId();
 
-        if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int userId)) {
-            // logic here?
-            TasklistMethods tm = new TasklistMethods();
+        if (userId.HasValue) {
             string errorMsg;
 
-            // Call the method and handle the success or failure
-            if (tm.CreateTasklist(userId, newList, out errorMsg)) {
+            if (_tasklistMethods.CreateTasklist(userId.Value, newList, out errorMsg)) {
                 return RedirectToAction("Tasklists");
             } else {
                 // Display the error message in the view
-                ViewBag.error = errorMsg;
+                ModelState.AddModelError(string.Empty, errorMsg);
                 
-                return View(newList); // Show the form again with the error message
+                return View(newList); // Show the form again with the error messages
             }
         } else {
             // Handle case where user is not properly logged in or identity is misconfigured

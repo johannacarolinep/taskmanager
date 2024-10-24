@@ -128,10 +128,6 @@ namespace TaskManager.Controllers
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> AccountCenter() {
-            // Log claims for debugging
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Console.WriteLine($"User ID from claims: {userId}");
-            Console.WriteLine($"User: {User}");
 
             var user = await _userManager.GetUserAsync(User);
 
@@ -139,7 +135,6 @@ namespace TaskManager.Controllers
             {
                 return NotFound("User not found."); // Handle the case where user is null
             }
-            Console.WriteLine($"user: {user}");
 
             var model = new AccountCenterViewModel
             {

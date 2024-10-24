@@ -10,13 +10,9 @@ public class TasklistMethods {
 
     private readonly string _connectionString;
 
-    public TasklistMethods() {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appSettings.json")
-                .Build();
+    public TasklistMethods(IConfiguration configuration) {
 
-            _connectionString = builder.GetConnectionString("DefaultConnection");
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
     /// <summary>
