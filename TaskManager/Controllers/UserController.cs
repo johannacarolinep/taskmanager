@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using TaskManager.Models;
@@ -124,13 +125,9 @@ namespace TaskManager.Controllers
         }
 
 
+        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> AccountCenter()
-        {
-            if (!IsLoggedIn()) {
-                RedirectToAction("Login");
-            }
-
+        public async Task<IActionResult> AccountCenter() {
             // Log claims for debugging
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Console.WriteLine($"User ID from claims: {userId}");
@@ -155,12 +152,9 @@ namespace TaskManager.Controllers
         }
 
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> UpdateUsername(string newUserName) {
-            // Ensure the user is logged in
-            if (!IsLoggedIn()) {
-                return RedirectToAction("Login");
-            }
 
             // Get the current user
             var user = await _userManager.GetUserAsync(User);
@@ -199,12 +193,9 @@ namespace TaskManager.Controllers
         }
 
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> UpdateEmail(string newEmail) {
-            // Ensure the user is logged in
-            if (!IsLoggedIn()) {
-                return RedirectToAction("Login");
-            }
 
             // Get the current user
             var user = await _userManager.GetUserAsync(User);
@@ -244,13 +235,9 @@ namespace TaskManager.Controllers
         }
 
 
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> UpdatePassword(AccountCenterViewModel model)
-        {
-            // Ensure the user is logged in
-            if (!IsLoggedIn()) {
-                return RedirectToAction("Login");
-            }
+        public async Task<IActionResult> UpdatePassword(AccountCenterViewModel model) {
 
             // Validate the model
             if (!ModelState.IsValid)
@@ -287,28 +274,21 @@ namespace TaskManager.Controllers
                 return View("AccountCenter", model);
             }
 
-            Console.WriteLine("Passed password check");
-
             // Attempt to change the password
             var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
 
-            Console.WriteLine($"Results: {result}");
-
             if (result.Succeeded)
             {
-                Console.WriteLine("Password updated");
                 // Optionally, sign the user in again
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
-                Console.WriteLine("After re-login");
                 // Add a success message
                 TempData["SuccessMessage"] = "Password updated successfully.";
                 return RedirectToAction("AccountCenter");
             }
 
             // If the update failed, add errors to the ModelState
-            foreach (var error in result.Errors)
-            {
+            foreach (var error in result.Errors) {
                 ModelState.AddModelError("NewPassword", error.Description);
             }
 
@@ -319,12 +299,9 @@ namespace TaskManager.Controllers
         }
 
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> UpdateProfileImage(AccountCenterViewModel model) {
-            // Ensure the user is logged in
-            if (!IsLoggedIn()) {
-                return RedirectToAction("Login");
-            }
 
             // Ensure an image is selected
             if (model.ProfileImage == null || model.ProfileImage.Length == 0) {

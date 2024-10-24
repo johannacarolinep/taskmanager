@@ -1,21 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TaskManager.Models;
 using System.Security.Claims;
 using TaskManager.Models.Services;
 
 namespace TaskManager.Controllers;
 
+[Authorize]
 public class TasklistController : Controller {
 
-    private bool IsLoggedIn() {
-        return User.Identity?.IsAuthenticated ?? false;
-    }
-
     public IActionResult Tasklists(string sortOrder) {
-        // Redirect non-logged-in users
-        if (!IsLoggedIn()) {
-            return RedirectToAction("Login", "User");
-        }
 
         List<TasklistModel> tasklists = new List<TasklistModel>();
 
@@ -53,10 +47,6 @@ public class TasklistController : Controller {
 
 
     public IActionResult Create() {
-    // redirects non logged in users to the login view
-    if (!IsLoggedIn()) {
-        return RedirectToAction("Login", "User");
-    }
     // Create tasklist form
     return View();
     }
@@ -64,10 +54,6 @@ public class TasklistController : Controller {
 
     [HttpPost]
     public IActionResult Create(TasklistModel newList) {
-        // redirects non logged in users to the login view
-        if (!IsLoggedIn()) {
-            return RedirectToAction("Login", "User");
-        }
 
         if (!ModelState.IsValid) {
             return View(newList);
