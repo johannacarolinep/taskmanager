@@ -31,7 +31,6 @@ public class TasklistMethods {
         List<TasklistModel> tasklists = new List<TasklistModel>();
 
         using (SqlConnection dbConnection = GetOpenConnection()) {
-            // SQL query to get task lists and the user's role in each list
             string sql = @"
                 SELECT 
                     TL.Id, 
@@ -40,35 +39,50 @@ public class TasklistMethods {
                     TL.CreatedAt, 
                     TL.IsActive, 
                     LU.Role,
-                    (
-                        SELECT STRING_AGG(U.UserName, ', ') 
-                        FROM Tbl_ListUser LU2
-                        INNER JOIN Tbl_User U ON LU2.UserId = U.Id
-                        WHERE LU2.ListId = TL.Id
-                    ) AS Contributors
+                    U.UserName,
+                    U.Image
                 FROM 
                     Tbl_Tasklist TL
                 INNER JOIN 
                     Tbl_ListUser LU ON TL.Id = LU.ListId
+                LEFT JOIN 
+                    Tbl_User U ON LU.UserId = U.Id
                 WHERE 
-                    LU.UserId = @UserId;";
+                    LU.UserId = @UserId
+                ORDER BY TL.Id;";
 
             using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
                 dbCommand.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
 
                 using (SqlDataReader reader = dbCommand.ExecuteReader()) {
+                    int lastTasklistId = -1;
+                    TasklistModel currentTasklist = null;
+
                     while (reader.Read()) {
-                        TasklistModel tasklist = new TasklistModel {
-                            Id = reader.GetInt32(0),
-                            Title = reader.GetString(1),
-                            Description = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            CreatedAt = reader.GetDateTime(3),
-                            IsActive = reader.GetBoolean(4),
-                            // Custom property to store the user's role in this task list
-                            UserRole = reader.GetString(5), // owner, admin, or contributor
-                            Contributors = reader.IsDBNull(6) ? "" : reader.GetString(6) // List of usernames
-                        };
-                        tasklists.Add(tasklist);
+                        int tasklistId = reader.GetInt32(0);
+
+                        if (tasklistId != lastTasklistId) {
+                            currentTasklist = new TasklistModel {
+                                Id = tasklistId,
+                                Title = reader.GetString(1),
+                                Description = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                CreatedAt = reader.GetDateTime(3),
+                                IsActive = reader.GetBoolean(4),
+                                UserRole = reader.GetString(5),
+                                Contributors = new List<ContributorModel>()
+                            };
+
+                            tasklists.Add(currentTasklist);
+                            lastTasklistId = tasklistId;
+                        }
+
+                        if (currentTasklist != null && !reader.IsDBNull(6)) {
+                            var contributor = new ContributorModel {
+                                UserName = reader.GetString(6),
+                                ProfileImage = reader.GetString(7)
+                            };
+                            currentTasklist.Contributors.Add(contributor);
+                        }
                     }
                 }
             }
@@ -76,7 +90,6 @@ public class TasklistMethods {
 
         return tasklists;
     }
-
 
     public bool CreateTasklist(int userId, TasklistModel tasklist, out string errorMsg) {
 

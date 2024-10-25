@@ -28,5 +28,11 @@ public class TasklistModel
 
     public string? UserRole {get; set;}
 
-    public string? Contributors {get; set;}
+    // New list to store each contributor's details
+    public List<ContributorModel> Contributors { get; set; } = new List<ContributorModel>();
+}
+
+public class ContributorModel {
+    public string UserName { get; set; }
+    public string ProfileImage { get; set; }
 }
