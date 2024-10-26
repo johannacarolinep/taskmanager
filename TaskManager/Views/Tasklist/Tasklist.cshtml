@@ -1,0 +1,73 @@
+@model TaskManager.ViewModels.TasklistDetailViewModel
+
+@{
+    ViewData["Title"] = "Tasklist Details";
+}
+
+<h2>@Model.Title</h2>
+
+<div>
+    <h3>Tasklist Information</h3>
+    <p>@Model.Description</p>
+    <p><strong>Created At:</strong> @Model.CreatedAt.ToString("g")</p>
+    <p><strong>Created By:</strong> @Model.CreatedByUsername</p>
+    <p><strong>Your Role:</strong> @Model.UserRole</p>
+</div>
+
+<hr />
+
+<div>
+    <h3>Contributors</h3>
+    <ul>
+        @foreach (var contributor in Model.Contributors)
+        {
+            <li>
+                <img src="@contributor.Image" alt="@contributor.Username" style="width: 30px; height: 30px; border-radius: 50%;" />
+                <strong>@contributor.Username</strong> - Role: @contributor.Role
+            </li>
+        }
+    </ul>
+</div>
+
+<hr />
+
+<div>
+    <h3>Tasks</h3>
+
+    <p>
+        <a asp-controller="Task" asp-action="Create" asp-route-listId="@Model.TasklistId">Create New Task</a>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Task Description</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Deadline</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Tasks.Count == 0)
+            {
+                <tr>
+                    <td colspan="5">No tasks available for this tasklist.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var task in Model.Tasks)
+                {
+                    <tr>
+                        <td>@task.Description</td>
+                        <td>@task.Priority</td>
+                        <td>@Html.DisplayFor(model => task.Status)</td>
+                        <td>@task.Deadline?.ToString("g")</td>
+                        <td>@task.CreatedAt.ToString("g")</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

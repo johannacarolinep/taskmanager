@@ -35,6 +35,8 @@ builder.Services.AddScoped<IPasswordHasher<UserModel>, PasswordHasher<UserModel>
 builder.Services.AddScoped<UserMethods>(); // Register UserMethods
 
 builder.Services.AddScoped<TasklistMethods>();
+builder.Services.AddScoped<TaskMethods>();
+builder.Services.AddScoped<ListUserMethods>();
 
 // Register TimeProvider (if necessary)
 builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);

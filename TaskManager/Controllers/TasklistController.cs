@@ -4,6 +4,7 @@ using TaskManager.Models;
 using System.Security.Claims;
 using TaskManager.Models.Services;
 using TaskManager.Helpers;
+using TaskManager.ViewModels;
 
 namespace TaskManager.Controllers;
 
@@ -11,9 +12,13 @@ namespace TaskManager.Controllers;
 public class TasklistController : Controller {
 
     private readonly TasklistMethods _tasklistMethods;
+    private readonly TaskMethods _taskMethods;
+    private readonly ListUserMethods _listUserMethods;
 
-    public TasklistController(TasklistMethods tasklistMethods) {
+    public TasklistController(TasklistMethods tasklistMethods, TaskMethods taskMethods, ListUserMethods listUserMethods) {
         _tasklistMethods = tasklistMethods;
+        _taskMethods = taskMethods;
+        _listUserMethods = listUserMethods;
     }
 
     public IActionResult Tasklists(string sortOrder) {
@@ -83,6 +88,39 @@ public class TasklistController : Controller {
             // Handle case where user is not properly logged in or identity is misconfigured
             return RedirectToAction("Login", "User");
         }
+    }
+
+
+    public IActionResult Tasklist(int listId) {
+        // Get the user ID
+        int? userId = User.GetUserId();
+        if (!userId.HasValue) {
+            return RedirectToAction("Login", "User");
+        }
+
+        // Retrieve tasklist details
+        var tasklistDetails = _tasklistMethods.GetTasklistById(listId, userId.Value);
+
+        // Retrieve tasks for the tasklist
+        var tasks = _taskMethods.GetTasksByListId(listId);
+
+        // Retrieve contributors for the tasklist
+        var contributors = _listUserMethods.GetContributorsByListId(listId);
+
+        // Construct the ViewModel
+        var tasklistDetail = new TasklistDetailViewModel {
+            TasklistId = tasklistDetails.Id, // Assuming tasklistDetails has Id
+            Title = tasklistDetails.Title,
+            Description = tasklistDetails.Description,
+            CreatedAt = tasklistDetails.CreatedAt,
+            CreatedByUsername = tasklistDetails.CreatedByUserName,
+            UserRole = tasklistDetails.UserRole,
+            Tasks = tasks,
+            Contributors = contributors
+        };
+
+        // Pass the data to the view
+        return View(tasklistDetail);
     }
 
 }

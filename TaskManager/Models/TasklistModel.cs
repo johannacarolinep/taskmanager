@@ -26,6 +26,8 @@ public class TasklistModel
     // Nullable foreign key relationship to UserModel (Tbl_User)
     public int? CreatedBy { get; set; }
 
+    public string? CreatedByUserName { get; set; }
+
     public string? UserRole {get; set;}
 
     // New list to store each contributor's details

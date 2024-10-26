@@ -144,4 +144,50 @@ public class TasklistMethods {
         }
     }
 
+
+    public TasklistModel GetTasklistById(int listId, int userId) {
+        TasklistModel tasklist = null;
+
+        using (SqlConnection dbConnection = GetOpenConnection()) {
+            string sql = @"
+                SELECT 
+                    TL.Id, 
+                    TL.Title, 
+                    TL.Description, 
+                    TL.CreatedAt, 
+                    TL.IsActive, 
+                    U.UserName AS CreatedByUserName,
+                    LU.Role AS UserRole -- Fetch the role of the logged-in user for this task list
+                FROM 
+                    Tbl_Tasklist TL
+                LEFT JOIN 
+                    Tbl_User U ON TL.CreatedBy = U.Id
+                LEFT JOIN 
+                    Tbl_ListUser LU ON TL.Id = LU.ListId AND LU.UserId = @UserId -- Role of the current user
+                WHERE 
+                    TL.Id = @ListId;";
+
+            using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
+                dbCommand.Parameters.Add("@ListId", SqlDbType.Int).Value = listId;
+                dbCommand.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+
+                using (SqlDataReader reader = dbCommand.ExecuteReader()) {
+                    if (reader.Read()) {
+                        tasklist = new TasklistModel {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Title = reader.GetString(reader.GetOrdinal("Title")),
+                            Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description")),
+                            CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                            IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
+                            CreatedByUserName = reader.IsDBNull(reader.GetOrdinal("CreatedByUserName")) ? null : reader.GetString(reader.GetOrdinal("CreatedByUserName")),
+                            UserRole = reader.IsDBNull(reader.GetOrdinal("UserRole")) ? null : reader.GetString(reader.GetOrdinal("UserRole")) // Set UserRole
+                        };
+                    }
+                }
+            }
+        }
+
+        return tasklist;
+    }
+
 }

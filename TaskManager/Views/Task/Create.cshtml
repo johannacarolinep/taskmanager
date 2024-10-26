@@ -1,0 +1,40 @@
+@model TaskManager.Models.TaskModel
+
+
+@{
+    ViewData["Title"] = "Create New Task";
+    int listId = ViewBag.listId;
+}
+
+<h2>Create New Task</h2>
+
+<form asp-action="Create" method="post">
+    <!-- Hidden field to pass the ListId -->
+    <input type="hidden" asp-for="ListId" value="@listId" />
+
+    <div>
+        <label asp-for="Description">Description</label>
+        <input asp-for="Description" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="Priority">Priority</label>
+        <select asp-for="Priority">
+            <option value="1">1 - High</option>
+            <option value="2">2 - Medium</option>
+            <option value="3">3 - Low</option>
+        </select>
+        <span asp-validation-for="Priority" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="Deadline">Deadline</label>
+        <input asp-for="Deadline" type="datetime-local" />
+        <span asp-validation-for="Deadline" class="text-danger"></span>
+    </div>
+
+    <button type="submit">Create Task</button>
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+</form>
