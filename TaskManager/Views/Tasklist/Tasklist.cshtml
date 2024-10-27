@@ -31,6 +31,16 @@
 
 <hr />
 
+@{
+    var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(errorMessage)) {
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+
 <div>
     <h3>Tasks</h3>
 
@@ -73,7 +83,18 @@
                                 <a asp-controller="Task" asp-action="Edit" asp-route-TaskId="@task.Id">Edit</a>
                                 <a asp-controller="Task" asp-action="Delete" asp-route-TaskId="@task.Id">Delete</a>
                             }
-                            Mark as in progress - Mark as complete
+                            @if (task.Status == TaskManager.Models.TaskStatus.NotStarted) {
+                                <form asp-controller="Task" asp-action="Progress" method="post" style="display: inline;">
+                                    <input type="hidden" name="taskId" value="@task.Id" />
+                                    <button type="submit" class="btn btn-primary">Mark as in progress</button>
+                                </form>
+                            }
+                            @if (task.Status == TaskManager.Models.TaskStatus.NotStarted || task.Status == TaskManager.Models.TaskStatus.InProgress) {
+                                <form asp-controller="Task" asp-action="Complete" method="post" style="display: inline;">
+                                    <input type="hidden" name="taskId" value="@task.Id" />
+                                    <button type="submit" class="btn btn-primary">Mark as complete</button>
+                                </form>
+                            }
                         </td>
                     </tr>
                 }

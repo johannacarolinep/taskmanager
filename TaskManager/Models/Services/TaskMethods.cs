@@ -27,7 +27,7 @@ public class TaskMethods {
     }
 
 
-    public List<TaskModel> GetTasksByListId(int listId) {
+    public List<TaskModel> GetActiveTasksByListId(int listId) {
         var tasks = new List<TaskModel>();
 
         using (SqlConnection dbConnection = GetOpenConnection()) {
@@ -44,7 +44,7 @@ public class TaskMethods {
                 FROM 
                     Tbl_Task
                 WHERE 
-                    ListId = @ListId
+                    ListId = @ListId AND IsActive = 1
                 ORDER BY 
                     Priority ASC, Deadline DESC;";
 
@@ -103,12 +103,12 @@ public class TaskMethods {
     }
 
 
-    public TaskModel? GetTaskById(int taskId) {
+    public TaskModel? GetActiveTaskById(int taskId) {
         using (SqlConnection dbConnection = GetOpenConnection()) {
             string sql = @"
                 SELECT Id, ListId, Description, Priority, Status, Deadline, CreatedAt, IsActive
                 FROM Tbl_Task
-                WHERE Id = @Id";
+                WHERE Id = @Id AND IsActive = 1";
 
             using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
                 dbCommand.Parameters.Add("@Id", SqlDbType.Int).Value = taskId;
@@ -146,7 +146,7 @@ public class TaskMethods {
                         Status = @Status,
                         Deadline = @Deadline,
                         IsActive = @IsActive
-                    WHERE Id = @Id";
+                    WHERE Id = @Id AND IsActive = 1";
 
                 using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
                     // Set parameter values
@@ -164,6 +164,29 @@ public class TaskMethods {
             }
         } catch (Exception) {
             errorMsg = "An error occurred while updating the task. Please try again.";
+            return false;
+        }
+    }
+
+
+    public bool SoftDeleteTask(int taskId, out string errorMsg) {
+        errorMsg = "";
+        try {
+            using (SqlConnection dbConnection = GetOpenConnection()) {
+                string sql = @"
+                    UPDATE Tbl_Task
+                    SET IsActive = 0
+                    WHERE Id = @Id";
+
+                using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
+                    dbCommand.Parameters.Add("@Id", SqlDbType.Int).Value = taskId;
+
+                    int rowsAffected = dbCommand.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        } catch (Exception) {
+            errorMsg = "An error occurred while deleting the task. Please try again.";
             return false;
         }
     }

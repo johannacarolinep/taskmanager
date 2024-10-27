@@ -78,7 +78,7 @@ public class TaskController : Controller {
             return RedirectToAction("Login", "User");
         }
 
-        var task = _taskMethods.GetTaskById(taskId);
+        var task = _taskMethods.GetActiveTaskById(taskId);
         
         if (task == null) {
             return NotFound(); // Return 404 if task not found
@@ -121,5 +121,113 @@ public class TaskController : Controller {
         // If update failed, add an error to the model state and redisplay the form
         ModelState.AddModelError(string.Empty, errorMsg);
         return View(updatedTask);
+    }
+
+
+    [HttpGet]
+    public IActionResult Delete(int taskId) {
+        int? userId = User.GetUserId();
+        if (!userId.HasValue) {
+            return RedirectToAction("Login", "User");
+        }
+
+        var task = _taskMethods.GetActiveTaskById(taskId);
+        
+        if (task == null) {
+            return NotFound(); // Return 404 if task not found
+        }
+
+        // Check if the user has appropriate role
+        var userRole = _listUserMethods.GetUserRoleInList(task.ListId, userId.Value);
+        if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
+            return Forbid(); // Return 403 if user lacks the required permissions
+        }
+
+        return View(task); // Pass task to the Edit view
+    }
+
+
+    [HttpPost]
+    public IActionResult Delete(TaskModel task) {
+        int? userId = User.GetUserId();
+        if (!userId.HasValue) {
+            return RedirectToAction("Login", "User");
+        }
+
+        // Check if the user has permission to delete this task
+        var userRole = _listUserMethods.GetUserRoleInList(task.ListId, userId.Value);
+        if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
+            return Forbid(); // Return 403 if unauthorized
+        }
+
+        // Attempt to delete the task
+        string errorMsg;
+        if (_taskMethods.SoftDeleteTask(task.Id, out errorMsg)) {
+            return RedirectToAction("Tasklist", "Tasklist", new { listId = task.ListId });
+        }
+
+        // If deletion failed, display error and reload view
+        ModelState.AddModelError(string.Empty, errorMsg);
+        return View(task); // Redisplay the delete view with error message
+    }
+
+
+    [HttpPost]
+    public IActionResult Progress(int taskId) {
+        int? userId = User.GetUserId();
+        if (!userId.HasValue) {
+            return RedirectToAction("Login", "User");
+        }
+
+        var task = _taskMethods.GetActiveTaskById(taskId);
+        if (task == null || task.Status == TaskManager.Models.TaskStatus.Done || task.Status == TaskManager.Models.TaskStatus.InProgress) {
+            return NotFound(); // Task doesn't exist or not in the required state
+        }
+
+        // Check if the user has access (Contributor, Admin, or Owner)
+        var userRole = _listUserMethods.GetUserRoleInList(task.ListId, userId.Value);
+        if (userRole == null) {
+            return Forbid();
+        }
+
+        // Update task status to In Progress
+        task.Status = TaskManager.Models.TaskStatus.InProgress;
+        string errorMsg;
+        if (!_taskMethods.UpdateTask(task, out errorMsg)){
+            TempData["ErrorMessage"] = errorMsg;
+            return RedirectToAction("Tasklist", "Tasklist", new { listId = task.ListId });
+        }
+
+        return RedirectToAction("Tasklist", "Tasklist", new { listId = task.ListId });
+    }
+
+
+    [HttpPost]
+    public IActionResult Complete(int taskId) {
+        int? userId = User.GetUserId();
+        if (!userId.HasValue) {
+            return RedirectToAction("Login", "User");
+        }
+
+        var task = _taskMethods.GetActiveTaskById(taskId);
+        if (task == null || task.Status == TaskManager.Models.TaskStatus.Done) {
+            return NotFound(); // Task doesn't exist or not in the required state
+        }
+
+        // Check if the user has access (Contributor, Admin, or Owner)
+        var userRole = _listUserMethods.GetUserRoleInList(task.ListId, userId.Value);
+        if (userRole == null) {
+            return Forbid();
+        }
+
+        // Update task status to Done
+        task.Status = TaskManager.Models.TaskStatus.Done;
+        string errorMsg;
+        if (!_taskMethods.UpdateTask(task, out errorMsg)){
+            TempData["ErrorMessage"] = errorMsg;
+            return RedirectToAction("Tasklist", "Tasklist", new { listId = task.ListId });
+        }
+
+        return RedirectToAction("Tasklist", "Tasklist", new { listId = task.ListId });
     }
 }

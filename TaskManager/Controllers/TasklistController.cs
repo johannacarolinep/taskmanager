@@ -102,7 +102,7 @@ public class TasklistController : Controller {
         var tasklistDetails = _tasklistMethods.GetTasklistById(listId, userId.Value);
 
         // Retrieve tasks for the tasklist
-        var tasks = _taskMethods.GetTasksByListId(listId);
+        var tasks = _taskMethods.GetActiveTasksByListId(listId);
 
         // Retrieve contributors for the tasklist
         var contributors = _listUserMethods.GetContributorsByListId(listId);
