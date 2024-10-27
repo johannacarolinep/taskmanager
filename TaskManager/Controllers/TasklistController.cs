@@ -91,7 +91,7 @@ public class TasklistController : Controller {
     }
 
 
-    public IActionResult Tasklist(int listId) {
+    public IActionResult Tasklist(int listId, string sortOrder, string searchString, List<int> selectedPriority, List<string> selectedStatus) {
         // Get the user ID
         int? userId = User.GetUserId();
         if (!userId.HasValue) {
@@ -100,12 +100,45 @@ public class TasklistController : Controller {
 
         // Retrieve tasklist details
         var tasklistDetails = _tasklistMethods.GetTasklistById(listId, userId.Value);
-
-        // Retrieve tasks for the tasklist
-        var tasks = _taskMethods.GetActiveTasksByListId(listId);
+        if (tasklistDetails == null) {
+            return NotFound(); // Return 404 if tasklist not found
+        }
 
         // Retrieve contributors for the tasklist
         var contributors = _listUserMethods.GetContributorsByListId(listId);
+
+        // Retrieve tasks for the tasklist
+        var tasks = _taskMethods.GetActiveTasksByListId(listId) ?? new List<TaskModel>();
+
+        // Search functionality
+        if (!string.IsNullOrEmpty(searchString)) {
+                tasks = tasks.Where(t => t.Description.Contains(
+                    searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        // Filter tasks by selected priorities
+        if (selectedPriority != null && selectedPriority.Any()) {
+            tasks = tasks.Where(t => selectedPriority.Contains(t.Priority)).ToList();
+        }
+
+        // Filter tasks by selected statuses
+        if (selectedStatus != null && selectedStatus.Any()) {
+            tasks = tasks.Where(t => selectedStatus.Contains(t.Status.ToString())).ToList();
+        }
+
+        // Sort tasks based on the sortOrder parameter
+        switch (sortOrder) {
+            case "description":
+                tasks = tasks.OrderBy(t => t.Description).ToList();
+                break;
+            case "deadline":
+                tasks = tasks.OrderBy(t => t.Deadline).ToList();
+                break;
+            default:
+                // Default sort (optional)
+                tasks = tasks.OrderBy(t => t.Deadline).ToList();
+                break;
+        }
 
         // Construct the ViewModel
         var tasklistDetail = new TasklistDetailViewModel {
@@ -120,6 +153,10 @@ public class TasklistController : Controller {
         };
 
         // Pass the data to the view
+        ViewBag.SearchString = searchString;
+        ViewBag.SortOrder = sortOrder;
+        ViewBag.SelectedPriority = selectedPriority;
+        ViewBag.SelectedStatus = selectedStatus;
         return View(tasklistDetail);
     }
 
