@@ -103,4 +103,69 @@ public class TaskMethods {
     }
 
 
+    public TaskModel? GetTaskById(int taskId) {
+        using (SqlConnection dbConnection = GetOpenConnection()) {
+            string sql = @"
+                SELECT Id, ListId, Description, Priority, Status, Deadline, CreatedAt, IsActive
+                FROM Tbl_Task
+                WHERE Id = @Id";
+
+            using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
+                dbCommand.Parameters.Add("@Id", SqlDbType.Int).Value = taskId;
+
+                using (SqlDataReader reader = dbCommand.ExecuteReader()) {
+                    if (reader.Read()) {
+                        // Map the result to TaskModel
+                        var task = new TaskModel {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            ListId = reader.GetInt32(reader.GetOrdinal("ListId")),
+                            Description = reader.GetString(reader.GetOrdinal("Description")),
+                            Priority = reader.GetByte(reader.GetOrdinal("Priority")),
+                            Status = Enum.Parse<TaskStatus>(reader.GetString(reader.GetOrdinal("Status"))),
+                            Deadline = reader.GetDateTime(reader.GetOrdinal("Deadline")),
+                            CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                            IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive"))
+                        };
+                        return task;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public bool UpdateTask(TaskModel task, out string errorMsg) {
+        errorMsg = "";
+        try {
+            using (SqlConnection dbConnection = GetOpenConnection()) {
+                string sql = @"
+                    UPDATE Tbl_Task
+                    SET Description = @Description,
+                        Priority = @Priority,
+                        Status = @Status,
+                        Deadline = @Deadline,
+                        IsActive = @IsActive
+                    WHERE Id = @Id";
+
+                using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
+                    // Set parameter values
+                    dbCommand.Parameters.Add("@Id", SqlDbType.Int).Value = task.Id;
+                    dbCommand.Parameters.Add("@Description", SqlDbType.NVarChar, 100).Value = task.Description;
+                    dbCommand.Parameters.Add("@Priority", SqlDbType.TinyInt).Value = task.Priority;
+                    dbCommand.Parameters.Add("@Status", SqlDbType.NVarChar, 20).Value = task.Status.ToString();
+                    dbCommand.Parameters.Add("@Deadline", SqlDbType.DateTime).Value = task.Deadline;
+                    dbCommand.Parameters.Add("@IsActive", SqlDbType.Bit).Value = task.IsActive;
+
+                    // Execute the update command
+                    int rowsAffected = dbCommand.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        } catch (Exception) {
+            errorMsg = "An error occurred while updating the task. Please try again.";
+            return false;
+        }
+    }
+
 }

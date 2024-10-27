@@ -3,6 +3,7 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using TaskManager.ViewModels;
+using TaskManager.Models;
 
 public class ListUserMethods {
     private readonly string _connectionString;
@@ -51,5 +52,25 @@ public class ListUserMethods {
         }
 
         return contributors;
+    }
+
+
+    public UserListRole? GetUserRoleInList(int listId, int userId) {
+        using (SqlConnection dbConnection = GetOpenConnection()) {
+            string sql = @"
+                SELECT Role FROM Tbl_ListUser 
+                WHERE ListId = @ListId AND UserId = @UserId AND IsActive = 1";
+
+            using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
+                dbCommand.Parameters.Add("@ListId", SqlDbType.Int).Value = listId;
+                dbCommand.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+
+                var result = dbCommand.ExecuteScalar();
+                if (result != null) {
+                    return Enum.Parse<UserListRole>(result.ToString());
+                }
+            }
+        }
+        return null;
     }
 }
