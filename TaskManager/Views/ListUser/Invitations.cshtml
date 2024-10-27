@@ -1,0 +1,64 @@
+@model IEnumerable<TaskManager.Models.TasklistModel>
+
+@{
+    ViewData["Title"] = "My invitations";
+}
+
+<h1>You have been invited to the following tasklists:</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (!Model.Any()) {
+    <p>No results found</p>
+} else {
+    @foreach (var tasklist in Model) {
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">@tasklist.Title</h5>
+            <p class="card-text">@tasklist.Description</p>
+            <p class="card-text">Created on: @tasklist.CreatedAt.ToShortDateString()</p>
+            <p class="card-text">Role: @tasklist.UserRole</p>
+
+            <div class="contributors">
+                @if (tasklist.Contributors.Count > 0) {
+                    // Calculate how many contributors to display
+                    var displayCount = Math.Min(tasklist.Contributors.Count, 3);
+
+                    // Loop through the contributors and display their images
+                    for (int i = 0; i < displayCount; i++) {
+                        var contributor = tasklist.Contributors[i];
+                        <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="30" title="@contributor.UserName" />
+                    }
+
+                    // If there are more than 3 contributors, display the count of additional users
+                    if (tasklist.Contributors.Count > 3) {
+                        var otherContributorsCount = tasklist.Contributors.Count - 3;
+                        <span class="other-count">+ @otherContributorsCount others</span>
+                    }
+                }
+            </div>
+            <form asp-action="AcceptInvite" method="post" style="display: inline;">
+                <input type="hidden" name="listId" value="@tasklist.Id" />
+                <button type="submit" class="btn btn-primary">Accept</button>
+            </form>
+            <form asp-action="DeclineInvite" method="post" style="display: inline;">
+                <input type="hidden" name="listId" value="@tasklist.Id" />
+                <button type="submit" class="btn btn-primary">Decline</button>
+            </form>
+
+        </div>
+    </div>
+    }
+}
