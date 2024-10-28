@@ -27,7 +27,7 @@ public class TasklistMethods {
     }
 
 
-    public List<TasklistModel> GetTasklistsForUser(int userId) {
+    public List<TasklistModel> GetActiveTasklistsForUser(int userId) {
         List<TasklistModel> tasklists = new List<TasklistModel>();
 
         using (SqlConnection dbConnection = GetOpenConnection()) {
@@ -48,7 +48,14 @@ public class TasklistMethods {
                 LEFT JOIN 
                     Tbl_User U ON LU.UserId = U.Id
                 WHERE 
-                    LU.UserId = @UserId
+                    TL.IsActive = 1   -- Only active tasklists
+                    AND LU.IsActive = 1   -- Only include active contributors
+                    AND LU.ListId IN (  -- Ensure this user is a member of the tasklist
+                        SELECT ListId 
+                        FROM Tbl_ListUser 
+                        WHERE UserId = @UserId 
+                        AND IsActive = 1  -- Only consider active membership
+                    )
                 ORDER BY TL.Id;";
 
             using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
@@ -61,6 +68,7 @@ public class TasklistMethods {
                     while (reader.Read()) {
                         int tasklistId = reader.GetInt32(0);
 
+                        // When tasklist ID changes, create a new TasklistModel
                         if (tasklistId != lastTasklistId) {
                             currentTasklist = new TasklistModel {
                                 Id = tasklistId,
@@ -76,10 +84,11 @@ public class TasklistMethods {
                             lastTasklistId = tasklistId;
                         }
 
-                        if (currentTasklist != null && !reader.IsDBNull(6)) {
+                        // Add contributor data to the current tasklist
+                        if (currentTasklist != null) {
                             var contributor = new ContributorModel {
-                                UserName = reader.GetString(6),
-                                ProfileImage = reader.GetString(7)
+                                UserName = reader.IsDBNull(6) ? null : reader.GetString(6),
+                                ProfileImage = reader.IsDBNull(7) ? null : reader.GetString(7)
                             };
                             currentTasklist.Contributors.Add(contributor);
                         }
