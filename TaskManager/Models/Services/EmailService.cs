@@ -11,7 +11,7 @@ namespace TaskManager.Models.Services
         {
             _configuration = configuration;
         }
-        public async Task SendEmailAsync(string toEmail, string subject, string plainTextMessage, string? htmlContent = null)
+        public async Task<bool> SendEmailAsync(string toEmail, string subject, string plainTextMessage, string? htmlContent = null)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_configuration["SmtpSettings:SenderName"], _configuration["SmtpSettings:SenderEmail"]));
@@ -23,13 +23,18 @@ namespace TaskManager.Models.Services
             };
 
             emailMessage.Body = bodyBuilder.ToMessageBody();
-
-            using (var client = new SmtpClient()) {
+            try {
+                using (var client = new SmtpClient()) {
                 await client.ConnectAsync(_configuration["SmtpSettings:Server"], int.Parse(_configuration["SmtpSettings:Port"]), MailKit.Security.SecureSocketOptions.StartTls);
                 await client.AuthenticateAsync(_configuration["SmtpSettings:Username"], _configuration["SmtpSettings:Password"]);
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);
+                }
+                return true;
+            } catch (Exception) {
+                return false;
             }
+            
         }
     }
 }

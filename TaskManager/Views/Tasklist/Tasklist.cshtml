@@ -19,7 +19,7 @@
 <div>
     <h3>Contributors</h3>
     @if (@Model.UserRole == "Owner" || @Model.UserRole == "Admin") {
-        <a asp-controller="ListUser" asp-action="Invite" asp-route-listId="@Model.TasklistId">Invite a new contributor to this list</a>
+        <a asp-controller="ListUser" asp-action="Invite" asp-route-listId="@Model.TasklistId" asp-route-listTitle="@Model.Title" asp-route-username="@User.Identity.Name">Invite a new contributor to this list</a>
     }
     <ul>
         @foreach (var contributor in Model.Contributors)
