@@ -55,7 +55,7 @@ public class ListUserMethods {
     }
 
 
-    public UserListRole? GetUserRoleInList(int listId, int userId) {
+    public UserListRole? GetUserRoleInList(int userId, int listId) {
         using (SqlConnection dbConnection = GetOpenConnection()) {
             string sql = @"
                 SELECT Role FROM Tbl_ListUser 
@@ -272,6 +272,28 @@ public class ListUserMethods {
         } catch (Exception) {
             errorMsg = "An error occurred while declining the invitation.";
             return false;
+        }
+    }
+
+
+    public void AssignUserIdToInvitations(int userId, string email, out string errorMsg) {
+        errorMsg = "";
+        try {
+            using (SqlConnection dbConnection = GetOpenConnection()) {
+                string sql = @"
+                    UPDATE Tbl_ListUser 
+                    SET UserId = @UserId, InviteEmail = NULL 
+                    WHERE InviteEmail = @Email;";
+
+                using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
+                    dbCommand.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                    dbCommand.Parameters.Add("@Email", SqlDbType.NVarChar).Value = email;
+
+                    dbCommand.ExecuteNonQuery();
+                }
+            }
+        } catch (Exception) {
+            errorMsg = "We failed to connect your new account to existing invitations. Please ask your collaborators to re-invite you.";
         }
     }
 

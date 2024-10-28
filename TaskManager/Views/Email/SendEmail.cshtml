@@ -1,0 +1,30 @@
+@using TaskManager.ViewModels
+@model EmailViewModel
+@{
+    ViewData["Title"] = "Send Email";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<form asp-action="SendEmail" method="post">
+    <div>
+        <label asp-for="ToEmail"></label>
+        <input asp-for="ToEmail" type="email" required />
+        <span asp-validation-for="ToEmail"></span>
+    </div>
+    <div>
+        <label asp-for="Subject"></label>
+        <input asp-for="Subject" type="text" required />
+        <span asp-validation-for="Subject"></span>
+    </div>
+    <div>
+        <label asp-for="Message"></label>
+        <textarea asp-for="Message" required></textarea>
+        <span asp-validation-for="Message"></span>
+    </div>
+    <div>
+        <input type="submit" value="Send Email" />
+    </div>
+</form>
+@if (ViewBag.Message != null)
+{
+    <p>@ViewBag.Message</p>
+}

@@ -15,11 +15,14 @@ namespace TaskManager.Controllers
         private readonly SignInManager<UserModel> _signInManager;
         private readonly Cloudinary _cloudinary;
 
-        public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, Cloudinary cloudinary)
+        private readonly ListUserMethods _listUserMethods;
+
+        public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, Cloudinary cloudinary, ListUserMethods listUserMethods)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _cloudinary = cloudinary;
+            _listUserMethods = listUserMethods;
         }
 
         private bool IsLoggedIn()
@@ -56,14 +59,23 @@ namespace TaskManager.Controllers
 
             var result = await _userManager.CreateAsync(user, tempUser.Password);
 
-            if (result.Succeeded)
-            {
+            if (result.Succeeded) {
+                // Attempt to update pending invitations to use the new user Id
+                // Get the newly created user to access the ID
+                var createdUser = await _userManager.FindByEmailAsync(tempUser.Email);
+        
+                // Call ListUserMethods to update invitations with this email
+                string errorMsg;
+                _listUserMethods.AssignUserIdToInvitations(createdUser.Id, createdUser.Email, out errorMsg);
+
+                if (!string.IsNullOrEmpty(errorMsg)) {
+                    TempData["ErrorMessage"] = errorMsg;
+                }
                 return RedirectToAction("Login", "User");
             }
 
             // Add errors to the ModelState
-            foreach (var error in result.Errors)
-            {
+            foreach (var error in result.Errors) {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 

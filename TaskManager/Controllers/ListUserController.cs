@@ -16,11 +16,14 @@ public class ListUserController : Controller {
     private readonly ListUserMethods _listUserMethods;
     private readonly UserMethods _userMethods;
 
-    public ListUserController(TasklistMethods tasklistMethods, TaskMethods taskMethods, ListUserMethods listUserMethods, UserMethods userMethods) {
+    private readonly EmailService _emailService;
+
+    public ListUserController(TasklistMethods tasklistMethods, TaskMethods taskMethods, ListUserMethods listUserMethods, UserMethods userMethods, EmailService emailService) {
         _tasklistMethods = tasklistMethods;
         _taskMethods = taskMethods;
         _listUserMethods = listUserMethods;
         _userMethods = userMethods;
+        _emailService = emailService;
     }
 
 
@@ -47,11 +50,9 @@ public class ListUserController : Controller {
     public async Task<IActionResult> Invite(InviteUserViewModel model, int listId) {
 
         ViewBag.ListId = listId;
-        Console.WriteLine($"List id : {listId}");
 
         // Validate inputs
         if (!ModelState.IsValid) {
-            Console.WriteLine("Modelstats is invalid!");
             return View(model);
         }
 
@@ -65,8 +66,6 @@ public class ListUserController : Controller {
         if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
             return Forbid(); // Only Owner/Admin can invite
         }
-
-        Console.WriteLine($"Currentuser has role {userRole}");
 
         // Retrieve invited user by email
         var inviteUser = await _userMethods.FindByEmailAsync(model.Email, CancellationToken.None);
@@ -85,6 +84,7 @@ public class ListUserController : Controller {
         // Check inviteUser's current relation to list
         if (inviteUser != null) {
             var inviteUserRole = _listUserMethods.GetUserRoleInList(inviteUser.Id, listId);
+            Console.WriteLine($"{inviteUser}'s role in the list is {inviteUserRole}");
             if (inviteUserRole != null) {
                 ModelState.AddModelError(string.Empty, "This user is already a member of the list.");
                 ViewBag.ListId = listId;
@@ -110,27 +110,52 @@ public class ListUserController : Controller {
         }
 
         bool emailSent = inviteUser != null 
-            ? SendInviteEmailExistingUser(model.Email, listId) 
-            : SendInviteEmailNewUser(model.Email, listId);
+            ? await SendInviteEmailExistingUser(model.Email, listId) 
+            : await SendInviteEmailNewUser(model.Email, listId);
     
         if (!emailSent) {
             ModelState.AddModelError(string.Empty, "Failed to send invitation email.");
             return View(model); // Return to the view if email sending fails
         }
-
+        // need to FIX - check if email was actually sent in functions
+        // pass in tasklist title and username to email functions
         TempData["SuccessMessage"] = "Invitation sent successfully!";
         return RedirectToAction("Tasklist", "Tasklist", new { listId = listId });
     }
 
-    // Sample method for sending email (you need to implement the actual logic)
-    private bool SendInviteEmailExistingUser(string email, int listId) {
-        // Your email sending logic here
+    private async Task<bool> SendInviteEmailExistingUser(string email, int listId) {
+
+        string subject = "You were invited to a new tasklist in TaskManager";
+        string plainText = "You were invited to a new tasklist with name XXX.\n\nClick here to see your invitations: http://localhost:5206/ListUser/Invitations";
+        string HtmlContent = @"
+            <h2>You've been invited to a new tasklist in TaskManager!</h2>
+            <p>You were invited to a new tasklist called <strong>XXX</strong>.</p>
+            <p>Click the link below to view your invitations:</p>
+            <p><a href='http://localhost:5206/ListUser/Invitations' style='color: #1E90FF; text-decoration: none;'>View Invitations</a></p>
+            <br />
+            <p>Best regards,<br />The TaskManager Team</p>";
+
+        await _emailService.SendEmailAsync(email, subject, plainText, HtmlContent);
+
         return true; // return true if successful
     }
 
     // Sample method for sending email (you need to implement the actual logic)
-    private bool SendInviteEmailNewUser(string email, int listId) {
-        // Your email sending logic here
+    private async Task<bool> SendInviteEmailNewUser(string email, int listId) {
+        string subject = "Register to see your new invitation in TaskManager";
+        string plainText = "You were invited to a new tasklist with name XXX in TaskManager.\n\nSign up for TaskManager today to see your invitation.\n\nClick here to register: http://localhost:5206/User/Signup";
+        string HtmlContent = @"
+            <h2>You've been invited to a new tasklist in TaskManager!</h2>
+            <p>You were invited to a new tasklist called <strong>XXX</strong>.</p>
+            <br/>
+            <p>TaskManager is a free productivity web app for collaborative todo-lists - perfect for keeping track of tasks at work/for school/for everyday life!</p>
+            <p>Click the link below to register for a free account and see your pending invitation:</p>
+            <p><a href='http://localhost:5206/User/Signup' style='color: #1E90FF; text-decoration: none;'>Sign Up with TaskManager!</a></p>
+            <br />
+            <p>Best regards,<br />The TaskManager Team</p>";
+
+        await _emailService.SendEmailAsync(email, subject, plainText, HtmlContent);
+
         return true; // return true if successful
     }
 

@@ -37,6 +37,7 @@ builder.Services.AddScoped<UserMethods>(); // Register UserMethods
 builder.Services.AddScoped<TasklistMethods>();
 builder.Services.AddScoped<TaskMethods>();
 builder.Services.AddScoped<ListUserMethods>();
+builder.Services.AddScoped<EmailService>();
 
 // Register TimeProvider (if necessary)
 builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
