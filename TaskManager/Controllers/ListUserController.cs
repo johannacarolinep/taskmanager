@@ -35,7 +35,7 @@ public class ListUserController : Controller {
             return RedirectToAction("Login", "User");
         }
 
-        var userRole = _listUserMethods.GetUserRoleInList(listId, userId.Value);
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, listId);
         if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
             return Forbid(); // Only Owner/Admin can invite
         }

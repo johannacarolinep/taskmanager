@@ -61,7 +61,6 @@ namespace TaskManager.Controllers
 
             if (result.Succeeded) {
                 // Attempt to update pending invitations to use the new user Id
-                // Get the newly created user to access the ID
                 var createdUser = await _userManager.FindByEmailAsync(tempUser.Email);
         
                 // Call ListUserMethods to update invitations with this email
