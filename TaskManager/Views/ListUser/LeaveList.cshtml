@@ -1,0 +1,30 @@
+@model TaskManager.Models.TasklistModel
+
+@{
+    ViewData["Title"] = "Leave Tasklist";
+}
+
+<h2>Leave Tasklist</h2>
+
+<p>Are you sure you want to leave this tasklist?</p>
+
+<div>
+    <strong>Title:</strong> @Model.Title
+</div>
+<div>
+    <strong>Description:</strong> @Model.Description
+</div>
+<div>
+    <strong>Created At:</strong> @Model.CreatedAt.ToString("g")
+</div>
+
+<form asp-controller="ListUser" asp-action="LeaveList" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Title" />
+    <input type="hidden" asp-for="Description" />
+    <button type="submit" class="btn btn-danger">Yes, leave tasklist</button>
+    <a asp-controller="Tasklist" asp-action="Tasklists" class="btn btn-secondary">Cancel</a>
+</form>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+

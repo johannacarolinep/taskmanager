@@ -22,34 +22,49 @@
     <p>No results found</p>
 } else {
     @foreach (var tasklist in Model) {
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">@tasklist.Title</h5>
-            <p class="card-text">@tasklist.Description</p>
-            <p class="card-text">Created on: @tasklist.CreatedAt.ToShortDateString()</p>
-            <p class="card-text">Role: @tasklist.UserRole</p>
+        if (tasklist.IsActive == true) {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">@tasklist.Title</h5>
+                    <p class="card-text">@tasklist.Description</p>
+                    <p class="card-text">Created on: @tasklist.CreatedAt.ToShortDateString()</p>
+                    <p class="card-text">Role: @tasklist.UserRole</p>
 
-            <div class="contributors">
-                @if (tasklist.Contributors.Count <= 3) {
-                    @foreach (var contributor in tasklist.Contributors) {
-                        <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="30" title="@contributor.UserName" />
+                    <div class="contributors">
+                        @if (tasklist.Contributors.Count <= 3) {
+                            @foreach (var contributor in tasklist.Contributors) {
+                                <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="30" title="@contributor.UserName" />
+                            }
+                        } else {
+                            // Show current user's image first and count remaining
+                            var otherContributorsCount = tasklist.Contributors.Count - 1;
+                            <img src="@tasklist.Contributors.First().ProfileImage" alt="@tasklist.Contributors.First().UserName" height="30" title="@tasklist.Contributors.First().UserName" />
+                            <span class="other-count">+@otherContributorsCount other users</span>
+                        }
+                    </div>
+                    @if (tasklist.UserRole == "Owner" || tasklist.UserRole == "Admin") {
+                        <a asp-action="EditList" asp-route-listId="@tasklist.Id">Edit list</a>
+                    } 
+                    @if (tasklist.UserRole == "Owner") {
+                        <a asp-action="Delete" asp-route-listId="@tasklist.Id" class="text-danger">Delete</a>
+                    } else {
+                        <a asp-controller="ListUser" asp-action="LeaveList" asp-route-listId="@tasklist.Id">Leave tasklist</a>
                     }
-                } else {
-                    // Show current user's image first and count remaining
-                    var otherContributorsCount = tasklist.Contributors.Count - 1;
-                    <img src="@tasklist.Contributors.First().ProfileImage" alt="@tasklist.Contributors.First().UserName" height="30" title="@tasklist.Contributors.First().UserName" />
-                    <span class="other-count">+@otherContributorsCount other users</span>
-                }
+                    <a asp-action="Tasklist" asp-route-listId="@tasklist.Id">Open tasklist</a>
+                </div>
             </div>
-            @if (tasklist.UserRole == "Owner" || tasklist.UserRole == "Admin") {
-                <a asp-action="EditList" asp-route-listId="@tasklist.Id">Edit list</a>
-                <a asp-action="DeleteConfirmation" asp-route-listId="@tasklist.Id" class="text-danger">Delete</a>
-            } else {
-                <a asp-action="LeaveList" asp-route-listId="@tasklist.Id">Leave tasklist</a>
-            }
-            <a asp-action="Tasklist" asp-route-listId="@tasklist.Id">Open tasklist</a>
-        </div>
-    </div>
+        } else {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">@tasklist.Title</h5>
+                    <p class="card-text">@tasklist.Description</p>
+                    <p class="card-text">Created on: @tasklist.CreatedAt.ToShortDateString()</p>
+                    <p class="card-text">Role: @tasklist.UserRole</p>
+
+                    <p class="card-text text-danger">This list has been deleted. <a asp-controller="ListUser" asp-action="LeaveList" asp-route-listId="@tasklist.Id">Leave tasklist</a></p>
+                </div>
+            </div>
+        }
     }
 }
 

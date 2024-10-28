@@ -160,4 +160,56 @@ public class TasklistController : Controller {
         return View(tasklistDetail);
     }
 
+
+    [HttpGet]
+    public IActionResult Delete(int listId) {
+        // Make sure user has permission to delete tasklist
+        int? userId = User.GetUserId();
+        if (!userId.HasValue) {
+            return RedirectToAction("Login", "User");
+        }
+
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, listId);
+        if (userRole != UserListRole.Owner) {
+            return Forbid();
+        }
+
+        // Retrieve the tasklist to show in the confirmation view
+        var tasklist = _tasklistMethods.GetTasklistById(listId, userId.Value); // Ensure this method retrieves the full tasklist model
+        if (tasklist == null) {
+            return NotFound(); // Handle case where tasklist does not exist
+        }
+
+        return View(tasklist); // Pass the tasklist model to the view
+    }
+
+
+    // Action to delete the tasklist
+    [HttpPost]
+    public IActionResult Delete(TasklistModel tasklist) {
+        // Ensure the user has permission to delete the tasklist
+        int? userId = User.GetUserId();
+        if (!userId.HasValue)
+        {
+            return RedirectToAction("Login", "User");
+        }
+
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, tasklist.Id);
+        if (userRole != UserListRole.Owner){
+            return Forbid(); // Only Owner can delete
+        }
+
+        // Set the tasklist and its tasks as inactive. delete the listuser
+        string errorMsg = "";
+        _tasklistMethods.SoftDeleteTasklist(tasklist.Id, userId.Value, out errorMsg);
+
+        if (string.IsNullOrEmpty(errorMsg)) {
+            TempData["SuccessMessage"] = "Tasklist deleted successfully.";
+            return RedirectToAction("Tasklists");
+        }
+
+        ModelState.AddModelError(string.Empty, errorMsg);
+        return View(tasklist);
+    }
 }
+

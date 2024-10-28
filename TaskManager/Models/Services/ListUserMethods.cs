@@ -270,7 +270,7 @@ public class ListUserMethods {
             
             return true;
         } catch (Exception) {
-            errorMsg = "An error occurred while declining the invitation.";
+            errorMsg = "An error occurred while deleting the relation to the list.";
             return false;
         }
     }

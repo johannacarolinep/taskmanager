@@ -27,7 +27,8 @@ public class TasklistMethods {
     }
 
 
-    public List<TasklistModel> GetActiveTasklistsForUser(int userId) {
+    // get lists incl disabledd lists
+    public List<TasklistModel> GetTasklistsForUser(int userId) {
         List<TasklistModel> tasklists = new List<TasklistModel>();
 
         using (SqlConnection dbConnection = GetOpenConnection()) {
@@ -48,8 +49,7 @@ public class TasklistMethods {
                 LEFT JOIN 
                     Tbl_User U ON LU.UserId = U.Id
                 WHERE 
-                    TL.IsActive = 1   -- Only active tasklists
-                    AND LU.IsActive = 1   -- Only include active contributors
+                    LU.IsActive = 1   -- Only include active contributors
                     AND LU.ListId IN (  -- Ensure this user is a member of the tasklist
                         SELECT ListId 
                         FROM Tbl_ListUser 
@@ -197,6 +197,49 @@ public class TasklistMethods {
         }
 
         return tasklist;
+    }
+
+
+    public void SoftDeleteTasklist(int listId, int userId, out string errorMsg) {
+        errorMsg = "";
+
+        try {
+            using (SqlConnection dbConnection = GetOpenConnection()) {
+                string sql = @"
+                    BEGIN TRY
+                        BEGIN TRANSACTION;
+
+                        -- Soft delete the tasklist
+                        UPDATE Tbl_Tasklist
+                        SET IsActive = 0
+                        WHERE Id = @ListId;
+
+                        -- Soft delete all associated tasks
+                        UPDATE Tbl_Task
+                        SET IsActive = 0
+                        WHERE ListId = @ListId;
+
+                        -- Delete the ListUser entry for the owner
+                        DELETE FROM Tbl_ListUser
+                        WHERE ListId = @ListId AND UserId = @UserId;
+
+                        COMMIT TRANSACTION;
+                    END TRY
+                    BEGIN CATCH
+                        -- Rollback the transaction on error
+                        ROLLBACK TRANSACTION;
+                    END CATCH;";
+
+                using (SqlCommand cmd = new SqlCommand(sql, dbConnection)) {
+                    cmd.Parameters.Add("@ListId", SqlDbType.Int).Value = listId;
+                    cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+
+                    cmd.ExecuteNonQuery(); // Execute the command
+                }
+            }
+        } catch (Exception) {
+            errorMsg = "Something went wrong when deleting the tasklist and its tasks. Please try again.";
+        }
     }
 
 }

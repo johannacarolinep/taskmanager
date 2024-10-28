@@ -239,4 +239,55 @@ public class ListUserController : Controller {
         return RedirectToAction("Invitations");
     }
 
+
+    [HttpGet]
+    public IActionResult LeaveList(int listId) {
+        // Make sure user has permission to delete tasklist
+        int? userId = User.GetUserId();
+        if (!userId.HasValue) {
+            return RedirectToAction("Login", "User");
+        }
+
+        // make sure user is not the owner of the tasklist
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, listId);
+        if (userRole == UserListRole.Owner) {
+            return Forbid();
+        }
+
+        // Retrieve the tasklist to show in the confirmation view
+        var tasklist = _tasklistMethods.GetTasklistById(listId, userId.Value); // Ensure this method retrieves the full tasklist model
+        if (tasklist == null) {
+            return NotFound(); // Handle case where tasklist does not exist
+        }
+
+        return View(tasklist); // Pass the tasklist model to the view
+    }
+
+
+    // Action to delete the tasklist
+    [HttpPost]
+    public IActionResult LeaveList(TasklistModel tasklist) {
+        // Ensure the user has permission to delete the tasklist
+        int? userId = User.GetUserId();
+        if (!userId.HasValue) {
+            return RedirectToAction("Login", "User");
+        }
+
+        // make sure user is not the owner of the tasklist
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, tasklist.Id);
+        if (userRole == UserListRole.Owner) {
+            return Forbid();
+        }
+
+        // Set the tasklist and its tasks as inactive. delete the listuser
+        string errorMsg = "";
+        if (_listUserMethods.DeleteListUserByUserAndList(userId.Value, tasklist.Id, out errorMsg)) {
+            TempData["SuccessMessage"] = "You left the tasklist successfully.";
+            return RedirectToAction("Tasklists", "Tasklist");
+        }
+
+        ModelState.AddModelError(string.Empty, errorMsg);
+        return View(tasklist);
+    }
+
 }
