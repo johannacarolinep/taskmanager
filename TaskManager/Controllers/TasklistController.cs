@@ -211,5 +211,61 @@ public class TasklistController : Controller {
         ModelState.AddModelError(string.Empty, errorMsg);
         return View(tasklist);
     }
+
+
+    public IActionResult EditList(int listId) {
+        // Ensure the user has permission to edit the tasklist
+        int? userId = User.GetUserId();
+        if (!userId.HasValue) {
+            return RedirectToAction("Login", "User");
+        }
+
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, listId);
+        if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
+            return Forbid(); // Only Owner or Admin can edit
+        }
+
+        // Fetch the tasklist details for the view
+        TasklistModel tasklist = _tasklistMethods.GetTasklistById(listId, userId.Value);
+        if (tasklist == null) {
+            return NotFound();
+        }
+
+        if (tasklist.IsActive == false) {
+            return NotFound();
+        }
+
+        return View(tasklist);
+    }
+
+
+    [HttpPost]
+    public IActionResult EditList(TasklistModel model) {
+        int? userId = User.GetUserId();
+        if (!userId.HasValue) {
+            return RedirectToAction("Login", "User");
+        }
+
+        // Confirm the user still has permission
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, model.Id);
+        if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
+            return Forbid();
+        }
+
+        if (!ModelState.IsValid) {
+            return View(model);
+        }
+
+        string errorMsg = "";
+        bool success = _tasklistMethods.UpdateTasklist(model, out errorMsg);
+
+        if (success) {
+            TempData["SuccessMessage"] = "Tasklist updated successfully.";
+            return RedirectToAction("Tasklists");
+        }
+
+        ModelState.AddModelError(string.Empty, errorMsg);
+        return View(model);
+    }
 }
 

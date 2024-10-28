@@ -243,4 +243,30 @@ public class TasklistMethods {
         }
     }
 
+
+    public bool UpdateTasklist(TasklistModel model, out string errorMsg) {
+        errorMsg = "";
+        try {
+            using (SqlConnection dbConnection = GetOpenConnection()) {
+                string sql = @"
+                    UPDATE Tbl_Tasklist
+                    SET Title = @Title,
+                        Description = @Description
+                    WHERE Id = @ListId";
+
+                using (SqlCommand cmd = new SqlCommand(sql, dbConnection)) {
+                    cmd.Parameters.Add("@Title", SqlDbType.NVarChar, 100).Value = model.Title;
+                    cmd.Parameters.Add("@Description", SqlDbType.NVarChar, 255).Value = (object)model.Description ?? DBNull.Value;
+                    cmd.Parameters.Add("@ListId", SqlDbType.Int).Value = model.Id;
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        } catch (Exception ex) {
+            errorMsg = $"Failed to update tasklist. Please try again. {ex}";
+            return false;
+        }
+    }
+
 }
