@@ -39,7 +39,8 @@ public class TasklistMethods {
                     TL.Description, 
                     TL.CreatedAt, 
                     TL.IsActive, 
-                    LU.Role,
+                    -- Retrieve the current user's role specifically
+                    (SELECT Role FROM Tbl_ListUser WHERE ListId = TL.Id AND UserId = @UserId) AS UserRole,
                     U.UserName,
                     U.Image
                 FROM 
