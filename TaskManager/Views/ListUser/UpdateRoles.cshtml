@@ -1,0 +1,64 @@
+@model TaskManager.ViewModels.UpdateRolesViewModel
+
+@{
+    ViewData["Title"] = "Update User Roles for list";
+}
+
+<h1>Update Roles for users in <i>@Model.ListTitle</i></h1>
+
+
+    <div>
+        <strong>List owner: @(Model.CurrentUserRole == UserListRole.Owner ? "You are the owner of this list." : @Model.Owner.Username)</strong>
+        <img src="@Model.Owner.Image" alt="@Model.Owner.Username" style="width: 30px; height: 30px; border-radius: 50%;" />
+    </div>
+    <hr />
+
+<form asp-action="UpdateRoles" method="post">
+    <input type="hidden" asp-for="ListId" />
+    <input type="hidden" asp-for="ListTitle" />
+    <input type="hidden" asp-for="Owner.ListUserId" />
+    <input type="hidden" asp-for="Owner.UserId" />
+    <input type="hidden" asp-for="Owner.Username" />
+    <input type="hidden" asp-for="Owner.Image" />
+    <input type="hidden" asp-for="Owner.Role" />
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Contributor</th>
+                <th>Current Role</th>
+                <th>New Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ListUsers != null && Model.ListUsers.Any()) {
+
+                @for (int i = 0; i < Model.ListUsers.Count; i++) {
+                    var contributor = Model.ListUsers[i];
+                    @* if (contributor.Username == Model.Owner.Username) continue; *@
+                    <tr>
+                        <td>
+                            <img src="@contributor.Image" alt="@contributor.Username" style="width: 30px; height: 30px; border-radius: 50%;" />
+                            @(contributor.Username == User.Identity.Name ? "You" : contributor.Username)
+                        </td>
+                        <td>@contributor.Role</td>
+                        <td>
+                            <input type="hidden" asp-for="ListUsers[@i].ListUserId" /> <!-- Hidden field for ListUserId -->
+                            <input type="hidden" asp-for="ListUsers[@i].UserId" />
+                            <input type="hidden" asp-for="ListUsers[@i].Username" />
+                            <input type="hidden" asp-for="ListUsers[@i].Image" />
+                            <select asp-for="ListUsers[@i].Role" class="form-control">
+                                <option value="Admin" selected="@(contributor.Role == "Admin")">Admin</option>
+                                <option value="Contributor" selected="@(contributor.Role == "Contributor")">Contributor</option>
+                            </select>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Update Roles</button>
+    <a asp-controller="Tasklist" asp-action="Tasklist" asp-route-listId=@Model.ListId class="btn btn-secondary">Cancel</a>
+
+</form>

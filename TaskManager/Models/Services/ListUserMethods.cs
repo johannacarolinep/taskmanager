@@ -42,7 +42,7 @@ public class ListUserMethods {
                             UserId = reader.IsDBNull(reader.GetOrdinal("UserId")) ? 0 : reader.GetInt32(reader.GetOrdinal("UserId")),
                             Username = reader.IsDBNull(reader.GetOrdinal("UserName")) ? "Unknown" : reader.GetString(reader.GetOrdinal("UserName")),
                             Image = reader.IsDBNull(reader.GetOrdinal("Image")) ? null : reader.GetString(reader.GetOrdinal("Image")),
-                            Role = reader.IsDBNull(reader.GetOrdinal("Role")) ? "Contributor" : reader.GetString(reader.GetOrdinal("Role"))
+                            Role = reader.GetString(reader.GetOrdinal("Role"))
                         };
 
                         contributors.Add(contributor);
@@ -246,6 +246,30 @@ public class ListUserMethods {
     }
 
 
+    public bool UpdateUserRole(int listUserId, string newRole, out string errorMsg) {
+        errorMsg = "";
+        try {
+            using (SqlConnection dbConnection = GetOpenConnection()) {
+                string sql = @"
+                    UPDATE Tbl_ListUser
+                    SET Role = @Role
+                    WHERE Id = @ListUserId AND IsActive = 1;";
+
+                using (SqlCommand cmd = new SqlCommand(sql, dbConnection)) {
+                    cmd.Parameters.Add("@Role", SqlDbType.NVarChar).Value = newRole;
+                    cmd.Parameters.Add("@ListUserId", SqlDbType.Int).Value = listUserId;
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return true; // Return true if the update was successful
+                }
+            }
+        } catch (Exception) {
+            errorMsg = "Failed to update user role.";
+            return false;
+        }
+    }
+
+
     public bool DeleteListUserByUserAndList(int userId, int listId, out string errorMsg) {
         errorMsg = "";
 
@@ -294,6 +318,57 @@ public class ListUserMethods {
             }
         } catch (Exception) {
             errorMsg = "We failed to connect your new account to existing invitations. Please ask your collaborators to re-invite you.";
+        }
+    }
+
+
+    public bool TransferOwnership(int listId, int currentOwnerId, int newOwnerId, out string errorMsg) {
+        errorMsg = "";
+
+        try {
+            using (SqlConnection dbConnection = GetOpenConnection()) {
+                using (SqlTransaction transaction = dbConnection.BeginTransaction()) {
+                    try {
+                        // Downgrade the current owner to Admin
+                        string downgradeOwnerSql = @"
+                            UPDATE Tbl_ListUser
+                            SET Role = @AdminRole
+                            WHERE ListId = @ListId AND UserId = @CurrentOwnerId;";
+
+                        using (SqlCommand downgradeCmd = new SqlCommand(downgradeOwnerSql, dbConnection, transaction)) {
+                            downgradeCmd.Parameters.AddWithValue("@AdminRole", "Admin");
+                            downgradeCmd.Parameters.AddWithValue("@ListId", listId);
+                            downgradeCmd.Parameters.AddWithValue("@CurrentOwnerId", currentOwnerId);
+                            downgradeCmd.ExecuteNonQuery();
+                        }
+
+                        // Promote the new owner to Owner
+                        string promoteNewOwnerSql = @"
+                            UPDATE Tbl_ListUser
+                            SET Role = @OwnerRole
+                            WHERE ListId = @ListId AND UserId = @NewOwnerId AND IsActive = 1;";
+
+                        using (SqlCommand promoteCmd = new SqlCommand(promoteNewOwnerSql, dbConnection, transaction)) {
+                            promoteCmd.Parameters.AddWithValue("@OwnerRole", "Owner");
+                            promoteCmd.Parameters.AddWithValue("@ListId", listId);
+                            promoteCmd.Parameters.AddWithValue("@NewOwnerId", newOwnerId);
+                            promoteCmd.ExecuteNonQuery();
+                        }
+
+                        // Commit the transaction if both updates are successful
+                        transaction.Commit();
+                        return true;
+                    } catch {
+                        // Rollback if any part of the transaction fails
+                        transaction.Rollback();
+                        errorMsg = "An error occurred during the ownership transfer.";
+                        return false;
+                    }
+                }
+            }
+        } catch (Exception) {
+            errorMsg = "Database connection error";
+            return false;
         }
     }
 

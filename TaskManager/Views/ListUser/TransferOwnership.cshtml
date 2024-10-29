@@ -1,0 +1,27 @@
+@model TaskManager.ViewModels.TransferOwnershipViewModel
+
+<h2>Transfer Ownership of @Model.ListTitle</h2>
+
+<form asp-action="TransferOwnership" method="post">
+    <input type="hidden" asp-for="ListId" />
+    <input type="hidden" asp-for="ListTitle" />
+
+    <div class="form-group">
+        <label for="NewOwnerId">Select the new owner:</label>
+        <select asp-for="NewOwnerId" asp-items="@(new SelectList(Model.Contributors, "UserId", "Username"))" class="form-control" required>
+            <option value="">-- Select a User --</option>
+        </select>
+    </div>
+
+    <div class="form-group form-check">
+        <input type="checkbox" asp-for="ConfirmTransfer" class="form-check-input" required />
+        <label asp-for="ConfirmTransfer" class="form-check-label">
+            I understand that I will be downgraded to Admin and transfer ownership to the selected user.
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Transfer Ownership</button>
+    <a asp-controller="Tasklist" asp-action="Tasklist" asp-route-listId="@Model.ListId" class="btn btn-secondary">Cancel</a>
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+</form>
