@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManager.Models.Services;
+using TaskManager.Models;
 
 namespace TaskManager.Models.Stores
 {
@@ -62,7 +63,7 @@ namespace TaskManager.Models.Stores
                 string encryptUsername = _encryptionHelper.Encrypt(user.UserName);
 
                 // Create a DeletedUser instance
-                var deletedUser = new DeletedUser{
+                var deletedUser = new DeletedUserModel{
                     UserId = user.Id,
                     EmailEncrypted = encryptEmail,
                     UserNameEncrypted = encryptUsername
@@ -187,6 +188,7 @@ namespace TaskManager.Models.Stores
             // Implement logic to find a user by their email address using _userMethods
             return _userMethods.FindByEmailAsync(normalizedEmail, cancellationToken);
         }
+
 
         public Task<string?> GetNormalizedEmailAsync(UserModel user, CancellationToken cancellationToken)
         {

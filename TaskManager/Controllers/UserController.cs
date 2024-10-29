@@ -8,6 +8,7 @@ using TaskManager.Models;
 using TaskManager.ViewModels;
 using TaskManager.Helpers;
 using TaskManager.Models.Services;
+using System.Linq.Expressions;
 
 namespace TaskManager.Controllers
 {
@@ -19,14 +20,18 @@ namespace TaskManager.Controllers
 
         private readonly ListUserMethods _listUserMethods;
         private readonly TasklistMethods _tasklistMethods;
+        private readonly EncryptionHelper _encryptionHelper;
+        private readonly UserMethods _userMethods;
 
-        public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, Cloudinary cloudinary, ListUserMethods listUserMethods, TasklistMethods tasklistMethods)
+        public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, Cloudinary cloudinary, ListUserMethods listUserMethods, TasklistMethods tasklistMethods, IConfiguration configuration, UserMethods userMethods)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _cloudinary = cloudinary;
             _listUserMethods = listUserMethods;
             _tasklistMethods = tasklistMethods;
+            _encryptionHelper = new EncryptionHelper(configuration);
+            _userMethods = userMethods;
         }
 
         private bool IsLoggedIn()
@@ -49,8 +54,30 @@ namespace TaskManager.Controllers
         public async Task<IActionResult> Signup(SignUpViewModel tempUser)
         {
             
-            if (!ModelState.IsValid)
-            {
+            if (!ModelState.IsValid) {
+                return View(tempUser);
+            }
+
+            // Check if the email exists in either the active or deleted users
+            var existingUser = await _userManager.FindByEmailAsync(tempUser.Email);
+            if (existingUser != null) {
+                ModelState.AddModelError(string.Empty, "An active account with this email already exists.");
+                return View(tempUser);
+            }
+
+            string encryptedEmail = _encryptionHelper.Encrypt(tempUser.Email);
+            var deletedUser = await _userMethods.FindDeletedByEmailAsync(encryptedEmail);
+
+            if (deletedUser != null) {
+                TempData["ReactivatePrompt"] = $"An account with email {tempUser.Email} was previously deactivated. Would you like to reactivate your account?";
+                return RedirectToAction("ReactivateAccount");
+            }
+
+            string encryptedUsername = _encryptionHelper.Encrypt(tempUser.UserName);
+
+            // Check for username uniqueness
+            if (_userMethods.CheckIfUsernameExists(tempUser.UserName, encryptedUsername)) {
+                ModelState.AddModelError("UserName", "This username is already taken.");
                 return View(tempUser);
             }
 
@@ -61,6 +88,7 @@ namespace TaskManager.Controllers
                 Email = tempUser.Email,
             };
 
+            // Attempt to create the user
             var result = await _userManager.CreateAsync(user, tempUser.Password);
 
             if (result.Succeeded) {
@@ -137,6 +165,18 @@ namespace TaskManager.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+
+        [HttpGet]
+        public IActionResult ReactivateAccount()
+        {
+            if (IsLoggedIn())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
         }
 
 

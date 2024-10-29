@@ -3,6 +3,7 @@ using System.Data;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Data.SqlClient;
+using TaskManager.Models;
 
 namespace TaskManager.Models.Services
 {
@@ -171,6 +172,37 @@ namespace TaskManager.Models.Services
         }
 
 
+        public async Task<DeletedUserModel?> FindDeletedByEmailAsync(string encryptedEmail) {
+            try {
+                using (SqlConnection dbConnection = GetOpenConnection()) {
+                    string sql = "SELECT * FROM Tbl_DeletedUser WHERE EmailEncrypted = @EmailEncrypted";
+                    using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
+                        dbCommand.Parameters.AddWithValue("@EmailEncrypted", encryptedEmail);
+
+                        using (SqlDataReader reader = await dbCommand.ExecuteReaderAsync()) {
+                            if (await reader.ReadAsync()) {
+                                // Map the data to a DeletedUserModel
+                                var deletedUser = new DeletedUserModel {
+                                    Id = Convert.ToInt32(reader["Id"]),
+                                    UserId = Convert.ToInt32(reader["UserId"]),
+                                    EmailEncrypted = reader["EmailEncrypted"].ToString(),
+                                    UserNameEncrypted = reader["UserNameEncrypted"].ToString(),
+                                    DeletionDate = Convert.ToDateTime(reader["DeletionDate"])
+                                };
+
+                                return deletedUser;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception) {
+                return null;
+            }
+
+            return null;
+        }
+
+
         /// <summary>
         /// Maps a data reader to a UserModel object.
         /// </summary>
@@ -275,7 +307,7 @@ namespace TaskManager.Models.Services
         }
 
 
-        public bool SoftDeleteUser(UserModel user, DeletedUser deletedUser, out string errorMsg) {
+        public bool SoftDeleteUser(UserModel user, DeletedUserModel deletedUser, out string errorMsg) {
             errorMsg = "";
 
             try {
@@ -328,6 +360,65 @@ namespace TaskManager.Models.Services
             {
                 errorMsg = $"Database connection error: {ex.Message}";
                 return false;
+            }
+        }
+
+
+        public bool CheckIfUsernameExists(string username, string encryptedUsername)
+        {
+            // Check if username exists in active users
+            bool existsInActiveUsers = CheckUsernameInActiveUsers(username);
+            
+            // Check if encrypted username exists in deleted users
+            bool existsInDeletedUsers = CheckEncryptedUsernameInDeletedUsers(encryptedUsername);
+
+            // Return true if the username exists in either table
+            return existsInActiveUsers || existsInDeletedUsers;
+        }
+
+        private bool CheckUsernameInActiveUsers(string username)
+        {
+            try
+            {
+                using (SqlConnection dbConnection = GetOpenConnection())
+                {
+                    string sql = "SELECT COUNT(*) FROM Tbl_User WHERE UserName = @UserName";
+                    using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection))
+                    {
+                        dbCommand.Parameters.AddWithValue("@UserName", username);
+
+                        int count = (int)dbCommand.ExecuteScalar();
+                        return count > 0; // Return true if there is at least one match
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking active username: {ex.Message}");
+                return false; // In case of an error, assume username doesn't exist
+            }
+        }
+
+        private bool CheckEncryptedUsernameInDeletedUsers(string encryptedUsername)
+        {
+            try
+            {
+                using (SqlConnection dbConnection = GetOpenConnection())
+                {
+                    string sql = "SELECT COUNT(*) FROM Tbl_DeletedUser WHERE UserNameEncrypted = @UserNameEncrypted";
+                    using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection))
+                    {
+                        dbCommand.Parameters.AddWithValue("@UserNameEncrypted", encryptedUsername);
+
+                        int count = (int)dbCommand.ExecuteScalar();
+                        return count > 0; // Return true if there is at least one match
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking deleted username: {ex.Message}");
+                return false; // In case of an error, assume username doesn't exist
             }
         }
 
