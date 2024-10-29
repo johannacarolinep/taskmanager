@@ -273,5 +273,63 @@ namespace TaskManager.Models.Services
                 return false;
             }
         }
+
+
+        public bool SoftDeleteUser(UserModel user, DeletedUser deletedUser, out string errorMsg) {
+            errorMsg = "";
+
+            try {
+                using (SqlConnection dbConnection = GetOpenConnection()) {
+                    using (SqlTransaction transaction = dbConnection.BeginTransaction()) {
+                        try {
+                            // Step 1: Update the Tbl_User to set IsActive to 0 and anonymize email and username
+                            string updateUserSql = @"
+                                UPDATE Tbl_User
+                                SET IsActive = 0, Email = @AnonymousEmail, UserName = @AnonymousUserName
+                                WHERE Id = @UserId;";
+
+                            using (SqlCommand updateUserCmd = new SqlCommand(updateUserSql, dbConnection, transaction)) {
+                                updateUserCmd.Parameters.Add("@AnonymousEmail", SqlDbType.NVarChar).Value = $"anonymoususer{user.Id}@email.com";
+                                updateUserCmd.Parameters.Add("@AnonymousUserName", SqlDbType.NVarChar).Value = $"anonymoususer{user.Id}";
+                                updateUserCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = user.Id;
+
+                                updateUserCmd.ExecuteNonQuery(); // No need to check rows affected
+                            }
+
+                            // Step 2: Insert the deleted user into Tbl_DeletedUser
+                            string insertDeletedUserSql = @"
+                                INSERT INTO Tbl_DeletedUser (UserId, EmailEncrypted, UserNameEncrypted, DeletionDate)
+                                VALUES (@UserId, @EmailEncrypted, @UserNameEncrypted, GETDATE());";
+
+                            using (SqlCommand insertDeletedUserCmd = new SqlCommand(insertDeletedUserSql, dbConnection, transaction))
+                            {
+                                insertDeletedUserCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = deletedUser.UserId;
+                                insertDeletedUserCmd.Parameters.Add("@EmailEncrypted", SqlDbType.NVarChar).Value = deletedUser.EmailEncrypted;
+                                insertDeletedUserCmd.Parameters.Add("@UserNameEncrypted", SqlDbType.NVarChar).Value = deletedUser.UserNameEncrypted;
+
+                                insertDeletedUserCmd.ExecuteNonQuery(); // No need to check rows affected
+                            }
+
+                            // Commit the transaction if both operations succeed
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            // Rollback if an error occurs
+                            transaction.Rollback();
+                            errorMsg = $"Error during soft delete: {ex.Message}";
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMsg = $"Database connection error: {ex.Message}";
+                return false;
+            }
+        }
+
     }
 }

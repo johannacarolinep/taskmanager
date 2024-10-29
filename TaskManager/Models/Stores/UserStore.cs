@@ -8,16 +8,16 @@ namespace TaskManager.Models.Stores
     public class UserStore : IUserStore<UserModel>, IUserPasswordStore<UserModel>, IUserEmailStore<UserModel>
     {
         private readonly UserMethods _userMethods;
+        private readonly EncryptionHelper _encryptionHelper;
 
-        public UserStore(UserMethods userMethods)
-        {
+        public UserStore(UserMethods userMethods, IConfiguration configuration) {
             _userMethods = userMethods ?? throw new ArgumentNullException(nameof(userMethods));
+            _encryptionHelper = new EncryptionHelper(configuration);
         }
 
         // 1. CreateAsync: Already implemented
         public async Task<IdentityResult> CreateAsync(UserModel user, CancellationToken cancellationToken)
         {
-            Console.WriteLine("INSIDE CREATE ASYNC");
             string errorMsg;
             int result = _userMethods.InsertUser(user, out errorMsg);
 
@@ -48,11 +48,43 @@ namespace TaskManager.Models.Stores
         }
 
         // 3. DeleteAsync: Not implemented yet, returning a default IdentityResult
-        public Task<IdentityResult> DeleteAsync(UserModel user, CancellationToken cancellationToken)
-        {
-            // Placeholder for future delete logic
-            return Task.FromResult(IdentityResult.Success);
+        public Task<IdentityResult> DeleteAsync(UserModel user, CancellationToken cancellationToken) {
+
+            // Check if the user is null
+            if (user == null) {
+                return Task.FromResult(IdentityResult.Failed(new IdentityError { Description = "User not found." }));
+            }
+
+            try {
+                // Prepare for soft deletion
+                // Generate encrypted versions of the username and email
+                string encryptEmail = _encryptionHelper.Encrypt(user.Email);
+                string encryptUsername = _encryptionHelper.Encrypt(user.UserName);
+
+                // Create a DeletedUser instance
+                var deletedUser = new DeletedUser{
+                    UserId = user.Id,
+                    EmailEncrypted = encryptEmail,
+                    UserNameEncrypted = encryptUsername
+                };
+
+                user.Email = $"anonymoususer{user.Id}@email.com";
+                user.UserName = $"anonymoususer{user.Id}";
+                user.IsActive = false;
+
+                // Attempt the deletion
+                string errorMsg = "";
+                if(!_userMethods.SoftDeleteUser(user, deletedUser, out errorMsg)) {
+                    return Task.FromResult(IdentityResult.Failed(new IdentityError { Description = errorMsg }));
+                }
+                // User soft deleted
+                return Task.FromResult(IdentityResult.Success);
+
+            } catch (Exception) {
+                return Task.FromResult(IdentityResult.Failed(new IdentityError { Description = "An error occurred during account deactivation. Please try again or contact support." }));
+            }
         }
+
 
         // 4. FindByIdAsync: Placeholder, returning null
         public async Task<UserModel?> FindByIdAsync(string userId, CancellationToken cancellationToken)

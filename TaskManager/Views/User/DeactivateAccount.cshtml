@@ -1,0 +1,30 @@
+@model TaskManager.ViewModels.DeactivateAccountViewModel
+
+<h2>Deactivate Account</h2>
+
+<p>You are about to deactivate your account. Any Tasklists currently owned by you will be deleted.
+    <br/>If you wish to avoid this, please transfer ownership of these lists to another user before deactivating your account.
+    <br/>You can transfer ownership of a tasklist by visiting the tasklist details page and clicking "Transfer ownership".
+    <br/><a asp-controller="Tasklist" asp-action="Tasklists">Go to the tasklists page</a>.
+</p>
+
+<form asp-action="DeactivateAccount" method="post">
+    <div class="form-group">
+        <label asp-for="Password">Enter your password to confirm:</label>
+        <input asp-for="Password" class="form-control" type="password" required />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group form-check">
+        <input asp-for="ConfirmDeactivation" class="form-check-input" required />
+        <label asp-for="ConfirmDeactivation" class="form-check-label">
+            I understand that any Tasklists or other entities owned by me will be deleted as part of this process.
+        </label>
+        <span asp-validation-for="ConfirmDeactivation" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-danger">Confirm deactivation</button>
+    <a asp-action="AccountCenter" class="btn btn-secondary">Cancel</a>
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+</form>

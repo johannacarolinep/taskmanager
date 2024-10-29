@@ -6,6 +6,8 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using TaskManager.Models;
 using TaskManager.ViewModels;
+using TaskManager.Helpers;
+using TaskManager.Models.Services;
 
 namespace TaskManager.Controllers
 {
@@ -16,13 +18,15 @@ namespace TaskManager.Controllers
         private readonly Cloudinary _cloudinary;
 
         private readonly ListUserMethods _listUserMethods;
+        private readonly TasklistMethods _tasklistMethods;
 
-        public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, Cloudinary cloudinary, ListUserMethods listUserMethods)
+        public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, Cloudinary cloudinary, ListUserMethods listUserMethods, TasklistMethods tasklistMethods)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _cloudinary = cloudinary;
             _listUserMethods = listUserMethods;
+            _tasklistMethods = tasklistMethods;
         }
 
         private bool IsLoggedIn()
@@ -397,6 +401,69 @@ namespace TaskManager.Controllers
             var deletionParams = new DeletionParams(publicId);
             var result = await _cloudinary.DestroyAsync(deletionParams);
             return result;
+        }
+
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult DeactivateAccount() {
+            
+            // Display the form to confirm deactivation
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> DeactivateAccount(DeactivateAccountViewModel model) {
+            // Get the current user
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) {
+                return NotFound("User not found.");
+            }
+
+            // Validate the password and confirmation
+            if (!ModelState.IsValid) {
+                return View(model);
+            }
+
+            // Verify the current password
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, model.Password);
+            if (!passwordCheck) {
+                Console.WriteLine("Password did not pass check!!!");
+                ModelState.AddModelError("Password", "Incorrect password. Please try again.");
+                return View(model);
+            }
+
+            // Proceed with account deactivation
+            var result = await _userManager.DeleteAsync(user);
+
+            // Pass back error messages if not successful
+            if (!result.Succeeded) {
+                foreach (var error in result.Errors) {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+
+            // Attempt to delete user's related entities.
+            string errorMsg = "";
+            List<TasklistModel> tasklists = _tasklistMethods.GetTasklistsForUser(user.Id);
+            foreach(var tasklist in tasklists) {
+                if (tasklist.UserRole == "Owner") {
+                    _tasklistMethods.SoftDeleteTasklist(tasklist.Id, user.Id, out errorMsg);
+                } else {
+                    _listUserMethods.DeleteListUserByUserAndList(user.Id, tasklist.Id, out errorMsg);
+                }
+            }
+
+            string successMessage = "Your account has been successfully deactivated.";
+            if (!string.IsNullOrEmpty(errorMsg)) {
+                successMessage += " However, some of your related entities may have failed to delete. If this is a problem, please contact email@email.com.";
+            }
+            // Sign out the user
+            TempData["SuccessMessage"] = successMessage;
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
 
     }
