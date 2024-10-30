@@ -203,6 +203,37 @@ namespace TaskManager.Models.Services
         }
 
 
+        public async Task<DeletedUserModel?> FindDeletedByEmailOrUserNameAsync(string encryptedString) {
+            try {
+                using (SqlConnection dbConnection = GetOpenConnection()) {
+                    string sql = "SELECT * FROM Tbl_DeletedUser WHERE EmailEncrypted = @EncryptedString OR UserNameEncrypted = @EncryptedString";
+                    using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
+                        dbCommand.Parameters.AddWithValue("@EncryptedString", encryptedString);
+
+                        using (SqlDataReader reader = await dbCommand.ExecuteReaderAsync()) {
+                            if (await reader.ReadAsync()) {
+                                // Map the data to a DeletedUserModel
+                                var deletedUser = new DeletedUserModel {
+                                    Id = Convert.ToInt32(reader["Id"]),
+                                    UserId = Convert.ToInt32(reader["UserId"]),
+                                    EmailEncrypted = reader["EmailEncrypted"].ToString(),
+                                    UserNameEncrypted = reader["UserNameEncrypted"].ToString(),
+                                    DeletionDate = Convert.ToDateTime(reader["DeletionDate"])
+                                };
+
+                                return deletedUser;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception) {
+                return null;
+            }
+
+            return null;
+        }
+
+
         /// <summary>
         /// Maps a data reader to a UserModel object.
         /// </summary>
@@ -382,7 +413,7 @@ namespace TaskManager.Models.Services
             {
                 using (SqlConnection dbConnection = GetOpenConnection())
                 {
-                    string sql = "SELECT COUNT(*) FROM Tbl_User WHERE UserName = @UserName";
+                    string sql = "SELECT COUNT(*) FROM Tbl_User WHERE UserName COLLATE SQL_Latin1_General_CP1_CI_AS = @UserName";
                     using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection))
                     {
                         dbCommand.Parameters.AddWithValue("@UserName", username);
@@ -419,6 +450,26 @@ namespace TaskManager.Models.Services
             {
                 Console.WriteLine($"Error checking deleted username: {ex.Message}");
                 return false; // In case of an error, assume username doesn't exist
+            }
+        }
+
+
+        public bool DeleteDeletedUser(int deletedUserId) {
+            try {
+                using (SqlConnection dbConnection = GetOpenConnection()) {
+                    string sql = "DELETE FROM Tbl_DeletedUser WHERE Id = @DeletedUserId";
+                    using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
+                        dbCommand.Parameters.AddWithValue("@DeletedUserId", deletedUserId);
+
+                        // Execute the command and return the number of affected rows
+                        int affectedRows = dbCommand.ExecuteNonQuery();
+                        return affectedRows > 0; // Return true if a row was deleted, otherwise false
+                    }
+                }
+            } catch (Exception) {
+                // Log the exception
+                // Console.WriteLine($"Error occurred while deleting deleted user: {ex.Message}");
+                return false; // Return false in case of error
             }
         }
 

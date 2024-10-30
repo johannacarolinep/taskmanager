@@ -2,6 +2,13 @@
 
 <h2>Login</h2>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
 <form asp-action="Login" method="post">
     <div asp-validation-summary="ModelOnly"></div>
 
@@ -22,3 +29,5 @@
 
     <button type="submit">Login</button>
 </form>
+
+<a asp-action="ReactivateAccount">Reactivate an inactive account.</a>

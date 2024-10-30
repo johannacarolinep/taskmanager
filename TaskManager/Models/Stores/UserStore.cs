@@ -59,8 +59,8 @@ namespace TaskManager.Models.Stores
             try {
                 // Prepare for soft deletion
                 // Generate encrypted versions of the username and email
-                string encryptEmail = _encryptionHelper.Encrypt(user.Email);
-                string encryptUsername = _encryptionHelper.Encrypt(user.UserName);
+                string encryptEmail = _encryptionHelper.Encrypt(user.Email.ToLower());
+                string encryptUsername = _encryptionHelper.Encrypt(user.UserName.ToLower());
 
                 // Create a DeletedUser instance
                 var deletedUser = new DeletedUserModel{
@@ -90,7 +90,6 @@ namespace TaskManager.Models.Stores
         // 4. FindByIdAsync: Placeholder, returning null
         public async Task<UserModel?> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            // Implement user lookup by ID here later
             return await _userMethods.GetUserByIdAsync(userId);
         }
 

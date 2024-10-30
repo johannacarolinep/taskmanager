@@ -180,6 +180,59 @@ namespace TaskManager.Controllers
         }
 
 
+[HttpPost]
+public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel model) {
+    if (!ModelState.IsValid) {
+        return View(model);
+    }
+
+    string encrypted = _encryptionHelper.Encrypt(model.EmailOrUsername.ToLower());
+    var deletedUser = await _userMethods.FindDeletedByEmailOrUserNameAsync(encrypted);
+
+    if (deletedUser == null) {
+        ModelState.AddModelError(string.Empty, "Sorry, either the account does not exist, or the credentials were invalid.");
+        return View(model);
+    }
+
+    var existingUser = await _userManager.FindByIdAsync(deletedUser.UserId.ToString());
+
+    if (existingUser == null) {
+        ModelState.AddModelError(string.Empty, "Sorry, either the account does not exist, or the credentials were invalid.");
+        return View(model);
+    }
+
+    // found both deletedUser and user objects
+
+    // Verify the password (you need to implement this in your UserManager)
+    var passwordCheck = await _userManager.CheckPasswordAsync(existingUser, model.Password);
+    if (!passwordCheck) {
+        Console.WriteLine("FAILED PASSWORD CHECK");
+        ModelState.AddModelError(string.Empty, "Sorry, either the account does not exist, or the credentials were invalid.");
+        return View(model);
+    }
+
+    Console.WriteLine("PASSED PASSWORD CHECK BEFORE UPDATING USER OBJECT");
+
+    // Proceed to reactivate the account
+    existingUser.UserName = _encryptionHelper.Decrypt(deletedUser.UserNameEncrypted);
+    existingUser.Email =_encryptionHelper.Decrypt(deletedUser.EmailEncrypted);
+    existingUser.IsActive = true;
+
+    var updateResult = await _userManager.UpdateAsync(existingUser);
+
+    if (!updateResult.Succeeded) {
+        ModelState.AddModelError(string.Empty, "Sorry, your credentials were valid but something went wrong. Please contact support.");
+        return View(model);
+    }
+
+    _userMethods.DeleteDeletedUser(deletedUser.Id);
+
+
+    TempData["SuccessMessage"] = "Your account has been successfully reactivated.";
+    return RedirectToAction("Login");
+}
+
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> AccountCenter() {

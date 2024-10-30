@@ -1,10 +1,10 @@
-@model TaskManager.ViewModels.LoginViewModel
+@model TaskManager.ViewModels.ReactivateAccountViewModel
 
 @{
     ViewData["Title"] = "Reactivate Account";
 }
 
-<h2>Account reactivation</h2>
+<h2>Reactivate Your Account</h2>
 
 @if (TempData["ReactivatePrompt"] != null)
 {
@@ -13,23 +13,21 @@
     </div>
 }
 
-<form asp-action="Login" method="post">
-    <div asp-validation-summary="ModelOnly"></div>
-
-    <div>
-        <label asp-for="UserName"></label>
-        <input asp-for="UserName" />
+<form asp-action="ReactivateAccount" method="post">
+    <div class="form-group">
+        <label>Email or username:</label>
+        <input asp-for="EmailOrUsername" class="form-control" />
+        <span asp-validation-for="EmailOrUsername" class="text-danger"></span>
     </div>
-
-    <div>
+    
+    <div class="form-group">
         <label asp-for="Password"></label>
-        <input asp-for="Password" type="password" />
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
     </div>
+    
+    <button type="submit" class="btn btn-primary">Reactivate Account</button>
 
-    <div>
-        <input asp-for="RememberMe" />
-        <label asp-for="RememberMe"></label>
-    </div>
-
-    <button type="submit">Login</button>
+    <div asp-validation-summary="All" class="text-danger"></div>
 </form>
+
