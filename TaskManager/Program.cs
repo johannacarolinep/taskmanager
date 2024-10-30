@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using CloudinaryDotNet;
-using CloudinaryDotNet.Actions;
 using dotenv.net;
 using TaskManager.Models;
 using TaskManager.Models.Services;

@@ -23,7 +23,9 @@ namespace TaskManager.Controllers
         private readonly EncryptionHelper _encryptionHelper;
         private readonly UserMethods _userMethods;
 
-        public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, Cloudinary cloudinary, ListUserMethods listUserMethods, TasklistMethods tasklistMethods, IConfiguration configuration, UserMethods userMethods)
+        private readonly EmailService _emailService;
+
+        public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, Cloudinary cloudinary, ListUserMethods listUserMethods, TasklistMethods tasklistMethods, IConfiguration configuration, UserMethods userMethods, EmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -32,6 +34,7 @@ namespace TaskManager.Controllers
             _tasklistMethods = tasklistMethods;
             _encryptionHelper = new EncryptionHelper(configuration);
             _userMethods = userMethods;
+            _emailService = emailService;
         }
 
         private bool IsLoggedIn()
@@ -558,6 +561,90 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+
+        [HttpGet]
+        public IActionResult ForgotPassword() {
+
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model) {
+            if (!ModelState.IsValid) {
+                return View(model);
+            }
+
+            // Find the user by email
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null) {
+                return RedirectToAction("ForgotPasswordConfirmation");
+            }
+
+            // Generate password reset token
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = Url.Action("ResetPassword", "User", new { token, email = model.Email }, Request.Scheme);
+
+            // Prepare email content
+            string subject = "Password reset for your TaskManager account";
+            string plainString = $"Please reset your password by clicking here: <a href='{resetLink}'>link</a>";
+            string HtmlContent = $@"
+                <h2>Your TaskManager account password was reset</h2>
+                <p>Hello <strong>{user.UserName}</strong>!</p>
+                <p>Your password was successfully reset. Click the link below to update your password and access the account:</p>
+                <p><a href='{resetLink}' style='color: #1E90FF; text-decoration: none;'>Update your password</a></p>
+                <br />
+                <p>Best regards,<br />The TaskManager Team</p>";
+
+            // Send email with the reset link
+            await _emailService.SendEmailAsync(model.Email, subject, plainString, HtmlContent);
+
+            return RedirectToAction("ForgotPasswordConfirmation");
+        }
+
+
+        [HttpGet]
+        public IActionResult ResetPassword(string token, string email) {
+            var model = new ResetPasswordViewModel { Token = token, Email = email };
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model) {
+            if (!ModelState.IsValid) {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null) {
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+
+            // Reset the password
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded) {
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+
+            foreach (var error in result.Errors) {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation() {
+            return View();
+        }
+
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation() {
+            return View();
+        }
+
 
     }
 }

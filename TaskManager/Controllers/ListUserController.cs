@@ -127,17 +127,15 @@ public class ListUserController : Controller {
 
     private async Task<bool> SendInviteEmailExistingUser(string email, string listTitle, string InvitingUsername) {
 
-        // http://localhost:5206/ListUser/Invitations
-        // https://taskmanager-aeb6bqhrgubzadag.northeurope-01.azurewebsites.net/ListUser/Invitations
-
+        var resetLink = Url.Action("Invitations", "ListUser", null, Request.Scheme);
         string subject = "You were invited to a new tasklist in TaskManager";
-        string plainText = $"You were invited to a new tasklist with name {listTitle} by TaskManager user {InvitingUsername}.\n\nClick here to see your invitations: https://taskmanager-aeb6bqhrgubzadag.northeurope-01.azurewebsites.net/ListUser/Invitations";
+        string plainText = $"You were invited to a new tasklist with name {listTitle} by TaskManager user {InvitingUsername}.\n\nClick here to see your invitations: {resetLink}";
         string HtmlContent = $@"
             <h2>You've been invited to a new tasklist in TaskManager!</h2>
             <p>You were invited to a new tasklist: <strong>{listTitle}</strong>.</p>
             <p>You were invited to this list by <strong>{InvitingUsername}</strong></p>
             <p>Click the link below to view your invitations:</p>
-            <p><a href='https://taskmanager-aeb6bqhrgubzadag.northeurope-01.azurewebsites.net/ListUser/Invitations' style='color: #1E90FF; text-decoration: none;'>View Invitations</a></p>
+            <p><a href='{resetLink}' style='color: #1E90FF; text-decoration: none;'>View Invitations</a></p>
             <br />
             <p>Best regards,<br />The TaskManager Team</p>";
 
@@ -150,18 +148,16 @@ public class ListUserController : Controller {
 
     private async Task<bool> SendInviteEmailNewUser(string email, string listTitle, string InvitingUsername) {
 
-        // https://taskmanager-aeb6bqhrgubzadag.northeurope-01.azurewebsites.net/User/Signup
-        // http://localhost:5206/User/Signup
-
+        var resetLink = Url.Action("Signup", "User", null, Request.Scheme);
         string subject = "Register to see your new invitation in TaskManager";
-        string plainText = $"You were invited by user {InvitingUsername} to a new tasklist with name {listTitle} in TaskManager.\n\nSign up for TaskManager today to see your invitation.\n\nClick here to register: https://taskmanager-aeb6bqhrgubzadag.northeurope-01.azurewebsites.net/User/Signup";
+        string plainText = $"You were invited by user {InvitingUsername} to a new tasklist with name {listTitle} in TaskManager.\n\nSign up for TaskManager today to see your invitation.\n\nClick here to register: {resetLink}";
         string HtmlContent = $@"
             <h2>You've been invited to a new tasklist in TaskManager!</h2>
             <p>You were invited to a new tasklist: <strong>{listTitle}</strong>.</p>
             <p>You were invited to this list by <strong>{InvitingUsername}</strong></p>
             <p>TaskManager is a free productivity web app for collaborative todo-lists - perfect for keeping track of tasks at work/for school/for everyday life!</p>
             <p>Click the link below to register for a free account and see your pending invitation:</p>
-            <p><a href='https://taskmanager-aeb6bqhrgubzadag.northeurope-01.azurewebsites.net/User/Signup' style='color: #1E90FF; text-decoration: none;'>Sign Up with TaskManager!</a></p>
+            <p><a href='{resetLink}' style='color: #1E90FF; text-decoration: none;'>Sign Up with TaskManager!</a></p>
             <br />
             <p>Best regards,<br />The TaskManager Team</p>";
 
