@@ -45,6 +45,7 @@ public class TaskController : Controller {
     public IActionResult Create(TaskModel newTask) {
     
         if (!ModelState.IsValid) {
+            ViewBag.listId = newTask.ListId;
             return View(newTask);
         }
 
@@ -67,6 +68,7 @@ public class TaskController : Controller {
         }
 
         ModelState.AddModelError(string.Empty, errorMsg);
+        ViewBag.listId = newTask.ListId;
         return View(newTask);
     }
 

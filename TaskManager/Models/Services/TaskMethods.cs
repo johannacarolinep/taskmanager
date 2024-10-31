@@ -59,7 +59,7 @@ public class TaskMethods {
                             Description = reader.GetString(reader.GetOrdinal("Description")),
                             Priority = reader.GetByte(reader.GetOrdinal("Priority")),
                             Status = (TaskStatus)Enum.Parse(typeof(TaskStatus), reader.GetString(reader.GetOrdinal("Status"))),
-                            Deadline = reader.IsDBNull(reader.GetOrdinal("Deadline")) ? null : reader.GetDateTime(reader.GetOrdinal("Deadline")),
+                            Deadline = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                             CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                             IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive"))
                         };

@@ -20,7 +20,8 @@ namespace TaskManager.Models;
         [Required]
         public TaskStatus Status { get; set; } = TaskStatus.NotStarted;
 
-        public DateTime? Deadline { get; set; }
+        [Required]
+        public DateTime Deadline { get; set; }
         
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

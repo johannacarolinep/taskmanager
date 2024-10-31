@@ -100,7 +100,7 @@ public class TasklistController : Controller {
         // Retrieve tasklist details
         var tasklistDetails = _tasklistMethods.GetTasklistById(listId, userId.Value);
         if (tasklistDetails == null) {
-            return NotFound(); // Return 404 if tasklist not found
+            return NotFound();
         }
 
         // Retrieve contributors for the tasklist
@@ -111,8 +111,27 @@ public class TasklistController : Controller {
 
         // Search functionality
         if (!string.IsNullOrEmpty(searchString)) {
-                tasks = tasks.Where(t => t.Description.Contains(
-                    searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+            tasks = tasks.Where(t => t.Description.Contains(
+                searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        // Handle filter parameters when passed back after sort or search
+        if (selectedPriority == null || !selectedPriority.Any()) {
+            var selectedPriorityString = Request.Query["selectedPriority"].ToString();
+            selectedPriority = string.IsNullOrEmpty(selectedPriorityString)
+                ? new List<int>()
+                : selectedPriorityString.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(int.Parse)
+                                        .ToList();
+        }
+
+        // If selectedStatus is null, try to parse it from the query string
+        if (selectedStatus == null || !selectedStatus.Any()) {
+            var selectedStatusString = Request.Query["selectedStatus"].ToString();
+            selectedStatus = string.IsNullOrEmpty(selectedStatusString)
+                ? new List<string>()
+                : selectedStatusString.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                                    .ToList();
         }
 
         // Filter tasks by selected priorities
@@ -120,8 +139,9 @@ public class TasklistController : Controller {
             tasks = tasks.Where(t => selectedPriority.Contains(t.Priority)).ToList();
         }
 
-        // Filter tasks by selected statuses
-        if (selectedStatus != null && selectedStatus.Any()) {
+        // Only apply the status filter if selectedStatus has values
+        if (selectedStatus != null && selectedStatus.Any() && selectedStatus.All(s => !string.IsNullOrEmpty(s))) {
+            // Check task status and filter
             tasks = tasks.Where(t => selectedStatus.Contains(t.Status.ToString())).ToList();
         }
 
@@ -141,7 +161,7 @@ public class TasklistController : Controller {
 
         // Construct the ViewModel
         var tasklistDetail = new TasklistDetailViewModel {
-            TasklistId = tasklistDetails.Id, // Assuming tasklistDetails has Id
+            TasklistId = tasklistDetails.Id,
             Title = tasklistDetails.Title,
             Description = tasklistDetails.Description,
             CreatedAt = tasklistDetails.CreatedAt,

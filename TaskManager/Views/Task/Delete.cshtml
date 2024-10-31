@@ -23,3 +23,5 @@
     <button type="submit" class="btn btn-danger">Confirm Deletion</button>
     <a asp-controller="Tasklist" asp-action="Tasklist" asp-route-listId="@Model.ListId" class="btn btn-secondary">Cancel</a>
 </form>
+
+<div asp-validation-summary="All" class="text-danger"></div>

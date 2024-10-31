@@ -73,6 +73,10 @@
 
     <!-- Search Form -->
     <form asp-action="Tasklist" method="get" asp-route-listId="@Model.TasklistId">
+        <input type="hidden" name="listId" value="@Model.TasklistId" />
+        <input type="hidden" name="sortOrder" value="@ViewBag.SortOrder" />
+        <input type="hidden" name="selectedPriority" value="@(ViewBag.SelectedPriority != null ? string.Join(",", ViewBag.SelectedPriority) : "")" />
+        <input type="hidden" name="selectedStatus" value="@(ViewBag.SelectedStatus != null ? string.Join(",", ViewBag.SelectedStatus) : "")" />
         <input type="text" name="searchString" value="@ViewBag.SearchString" placeholder="Search by title..." />
         <button type="submit">Search</button>
     </form>
@@ -80,34 +84,32 @@
     <!-- Filter form -->
     <form method="get" asp-controller="Tasklist" asp-action="Tasklist">
         <input type="hidden" name="listId" value="@Model.TasklistId" />
+        <input type="hidden" name="sortOrder" value="@ViewBag.SortOrder" />
+        <input type="hidden" name="searchString" value="@ViewBag.SearchString" />
+
         <div>
             <h4>Filter by Priority:</h4>
-            <label>
-                <input type="checkbox" name="selectedPriority" value="1" 
-                    @(ViewBag.SelectedPriority != null && ViewBag.SelectedPriority.Contains(1) ? "checked" : "") /> 1
-            </label>
-            <label>
-                <input type="checkbox" name="selectedPriority" value="2" 
-                    @(ViewBag.SelectedPriority != null && ViewBag.SelectedPriority.Contains(2) ? "checked" : "") /> 2
-            </label>
-            <label>
-                <input type="checkbox" name="selectedPriority" value="3" 
-                    @(ViewBag.SelectedPriority != null && ViewBag.SelectedPriority.Contains(3) ? "checked" : "") /> 3
-            </label>
+            @for (int i = 1; i <= 3; i++)
+            {
+                <label>
+                    <input type="checkbox" name="selectedPriority" value="@i"
+                        @(ViewBag.SelectedPriority != null && ViewBag.SelectedPriority.Contains(i) ? "checked" : "") /> @i
+                </label>
+            }
         </div>
 
         <div>
             <h4>Filter by Status:</h4>
             <label>
-                <input type="checkbox" name="selectedStatus" value="NotStarted" 
+                <input type="checkbox" name="selectedStatus" value="NotStarted"
                     @(ViewBag.SelectedStatus != null && ViewBag.SelectedStatus.Contains("NotStarted") ? "checked" : "") /> Not Started
             </label>
             <label>
-                <input type="checkbox" name="selectedStatus" value="InProgress" 
+                <input type="checkbox" name="selectedStatus" value="InProgress"
                     @(ViewBag.SelectedStatus != null && ViewBag.SelectedStatus.Contains("InProgress") ? "checked" : "") /> In Progress
             </label>
             <label>
-                <input type="checkbox" name="selectedStatus" value="Done" 
+                <input type="checkbox" name="selectedStatus" value="Done"
                     @(ViewBag.SelectedStatus != null && ViewBag.SelectedStatus.Contains("Done") ? "checked" : "") /> Done
             </label>
         </div>
@@ -117,8 +119,18 @@
 
     <!-- Sorting Links -->
     <div>
-        <a asp-action="Tasklist" asp-route-listId="@Model.TasklistId" asp-route-sortOrder="description" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by description</a> |
-        <a asp-action="Tasklist" asp-route-listId="@Model.TasklistId" asp-route-sortOrder="deadline" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by deadline</a>
+        <a asp-action="Tasklist" asp-route-listId="@Model.TasklistId" asp-route-sortOrder="description" 
+            asp-route-searchString="@ViewBag.SearchString"
+            asp-route-selectedPriority="@(ViewBag.SelectedPriority != null ? string.Join(",", ViewBag.SelectedPriority) : "")"
+            asp-route-selectedStatus="@(ViewBag.SelectedStatus != null ? string.Join(",", ViewBag.SelectedStatus) : "")">
+            Sort by description
+        </a> |
+        <a asp-action="Tasklist" asp-route-listId="@Model.TasklistId" asp-route-sortOrder="deadline" 
+            asp-route-searchString="@ViewBag.SearchString"
+            asp-route-selectedPriority="@(ViewBag.SelectedPriority != null ? string.Join(",", ViewBag.SelectedPriority) : "")"
+            asp-route-selectedStatus="@(ViewBag.SelectedStatus != null ? string.Join(",", ViewBag.SelectedStatus) : "")">
+            Sort by deadline
+        </a>
     </div>
 
     <table class="table">
@@ -147,7 +159,7 @@
                         <td>@task.Description</td>
                         <td>@task.Priority</td>
                         <td>@Html.DisplayFor(model => task.Status)</td>
-                        <td>@task.Deadline?.ToString("g")</td>
+                        <td>@task.Deadline.ToString("g")</td>
                         <td>@task.CreatedAt.ToString("g")</td>
                         <td>
                             @if (Model.UserRole == "Owner" || Model.UserRole == "Admin") {
