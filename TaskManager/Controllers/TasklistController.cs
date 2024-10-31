@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using TaskManager.Models;
-using System.Security.Claims;
 using TaskManager.Models.Services;
 using TaskManager.Helpers;
 using TaskManager.ViewModels;

@@ -7,18 +7,11 @@ using TaskManager.Models;
 
 namespace TaskManager.Models.Services
 {
-    public class UserMethods
-    {
+    public class UserMethods {
         private readonly string _connectionString;
 
-        public UserMethods()
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appSettings.json")
-                .Build();
-
-            _connectionString = builder.GetConnectionString("DefaultConnection");
+        public UserMethods(IConfiguration configuration) {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         /// <summary>
@@ -107,8 +100,7 @@ namespace TaskManager.Models.Services
             }
             catch (Exception ex)
             {
-                // Log the exception or handle it as needed
-                Console.WriteLine($"Error in GetUserById: {ex.Message}");
+                // Console.WriteLine($"Error in GetUserById: {ex.Message}");
             }
             return null;
         }

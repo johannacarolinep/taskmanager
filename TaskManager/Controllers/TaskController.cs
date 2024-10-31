@@ -30,7 +30,7 @@ public class TaskController : Controller {
         }
 
         // Check if the user has appropriate role
-        var userRole = _listUserMethods.GetUserRoleInList(listId, userId.Value);
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, listId);
         if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
             return Forbid(); // Return 403 if user lacks the required permissions
         }
@@ -55,7 +55,7 @@ public class TaskController : Controller {
         }
 
         // Check if the user has appropriate role
-        var userRole = _listUserMethods.GetUserRoleInList(newTask.ListId, userId.Value);
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, newTask.ListId);
         if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
             return Forbid(); // Return 403 if user lacks the required permissions
         }
@@ -85,7 +85,7 @@ public class TaskController : Controller {
         }
 
         // Check if the user has appropriate role
-        var userRole = _listUserMethods.GetUserRoleInList(task.ListId, userId.Value);
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, task.ListId);
         if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
             return Forbid(); // Return 403 if user lacks the required permissions
         }
@@ -107,7 +107,7 @@ public class TaskController : Controller {
         }
 
         // Check if the user has appropriate role
-        var userRole = _listUserMethods.GetUserRoleInList(updatedTask.ListId, userId.Value);
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, updatedTask.ListId);
         if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
             return Forbid(); // Return 403 if user lacks the required permissions
         }
@@ -138,7 +138,7 @@ public class TaskController : Controller {
         }
 
         // Check if the user has appropriate role
-        var userRole = _listUserMethods.GetUserRoleInList(task.ListId, userId.Value);
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, task.ListId);
         if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
             return Forbid(); // Return 403 if user lacks the required permissions
         }
@@ -155,7 +155,7 @@ public class TaskController : Controller {
         }
 
         // Check if the user has permission to delete this task
-        var userRole = _listUserMethods.GetUserRoleInList(task.ListId, userId.Value);
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, task.ListId);
         if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
             return Forbid(); // Return 403 if unauthorized
         }
@@ -185,7 +185,7 @@ public class TaskController : Controller {
         }
 
         // Check if the user has access (Contributor, Admin, or Owner)
-        var userRole = _listUserMethods.GetUserRoleInList(task.ListId, userId.Value);
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, task.ListId);
         if (userRole == null) {
             return Forbid();
         }
@@ -215,7 +215,7 @@ public class TaskController : Controller {
         }
 
         // Check if the user has access (Contributor, Admin, or Owner)
-        var userRole = _listUserMethods.GetUserRoleInList(task.ListId, userId.Value);
+        var userRole = _listUserMethods.GetUserRoleInList(userId.Value, task.ListId);
         if (userRole == null) {
             return Forbid();
         }

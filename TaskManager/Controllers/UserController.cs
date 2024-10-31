@@ -1,14 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using TaskManager.Models;
 using TaskManager.ViewModels;
-using TaskManager.Helpers;
 using TaskManager.Models.Services;
-using System.Linq.Expressions;
 
 namespace TaskManager.Controllers
 {
@@ -47,7 +44,7 @@ namespace TaskManager.Controllers
         {
             if (IsLoggedIn())
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Tasklists", "Tasklist");
             }
 
             return View();
@@ -118,11 +115,9 @@ namespace TaskManager.Controllers
 
 
         [HttpGet]
-        public IActionResult Login()
-        {
-            if (IsLoggedIn())
-            {
-                return RedirectToAction("Index", "Home");
+        public IActionResult Login() {
+            if (IsLoggedIn()) {
+                return RedirectToAction("Tasklists", "Tasklist");
             }
 
             return View();
@@ -133,16 +128,13 @@ namespace TaskManager.Controllers
         {
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("Modelstat invalid, login");
                 return View(model);
             }
 
             var result = await _signInManager.PasswordSignInAsync(
                 model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 
-            Console.WriteLine($"Result: {result}");
-            if (result.Succeeded)
-            {
+            if (result.Succeeded) {
                 // Fetch the current user from the UserManager
                 var user = await _userManager.FindByNameAsync(model.UserName);
 
@@ -154,7 +146,7 @@ namespace TaskManager.Controllers
                     await _userManager.UpdateAsync(user);
                 }
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Tasklists", "Tasklist");
             }
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -164,19 +156,16 @@ namespace TaskManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
+        public async Task<IActionResult> Logout() {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login");
         }
 
 
         [HttpGet]
-        public IActionResult ReactivateAccount()
-        {
-            if (IsLoggedIn())
-            {
-                return RedirectToAction("Index", "Home");
+        public IActionResult ReactivateAccount() {
+            if (IsLoggedIn()) {
+                return RedirectToAction("Tasklists", "Tasklist");
             }
 
             return View();
@@ -209,12 +198,10 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
     // Verify the password (you need to implement this in your UserManager)
     var passwordCheck = await _userManager.CheckPasswordAsync(existingUser, model.Password);
     if (!passwordCheck) {
-        Console.WriteLine("FAILED PASSWORD CHECK");
+
         ModelState.AddModelError(string.Empty, "Sorry, either the account does not exist, or the credentials were invalid.");
         return View(model);
     }
-
-    Console.WriteLine("PASSED PASSWORD CHECK BEFORE UPDATING USER OBJECT");
 
     // Proceed to reactivate the account
     existingUser.UserName = _encryptionHelper.Decrypt(deletedUser.UserNameEncrypted);
@@ -279,7 +266,7 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
             {
                 // Sign in user with new credentials
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                // Add a success message (consider using TempData for flash messages)
+
                 TempData["SuccessMessage"] = "Username updated successfully.";
                 return RedirectToAction("AccountCenter");
             }
@@ -346,9 +333,7 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
         public async Task<IActionResult> UpdatePassword(AccountCenterViewModel model) {
 
             // Validate the model
-            if (!ModelState.IsValid)
-            {
-                Console.WriteLine("Modelstate was invalid in update password");
+            if (!ModelState.IsValid) {
                 // Get the current user to pass back to the view, even if there's an error
                 var userForError = await _userManager.GetUserAsync(User);
                 if (userForError == null)
@@ -370,9 +355,7 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
 
             // Verify the current password
             var passwordCheck = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
-            if (!passwordCheck)
-            {
-                Console.WriteLine("Password did not pass check!!!");
+            if (!passwordCheck) {
                 ModelState.AddModelError("CurrentPassword", "The current password is incorrect.");
                 model.CurrentUserName = user.UserName;
                 model.CurrentEmail = user.Email;
@@ -449,7 +432,7 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
                         return RedirectToAction("AccountCenter");
                     }
 
-                    // Add any errors that occurred while updating the user record
+                    // Add any errors that occurred while updating the user
                     foreach (var error in updateResult.Errors) {
                         ModelState.AddModelError("ProfileImage", error.Description);
                     }
@@ -488,9 +471,9 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
         }
 
         private string GetCloudinaryPublicId(string imageUrl) {
-            // Extract the public ID from the URL
-            var fileName = imageUrl.Split('/').Last(); // Get file name with extension
-            return fileName.Substring(0, fileName.LastIndexOf('.')); // Return without file extension
+            // Extract the cloudinary public ID from the imageURL
+            var idString = imageUrl.Split('/').Last();
+            return idString.Substring(0, idString.LastIndexOf('.')); // Return without file extension
         }
 
         private async Task<DeletionResult> DeleteImageFromCloudinary(string publicId) {
@@ -525,7 +508,6 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
             // Verify the current password
             var passwordCheck = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!passwordCheck) {
-                Console.WriteLine("Password did not pass check!!!");
                 ModelState.AddModelError("Password", "Incorrect password. Please try again.");
                 return View(model);
             }
@@ -559,7 +541,7 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
             // Sign out the user
             TempData["SuccessMessage"] = successMessage;
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login");
         }
 
 

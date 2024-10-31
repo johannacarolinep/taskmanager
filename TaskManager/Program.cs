@@ -16,13 +16,13 @@ if (string.IsNullOrWhiteSpace(cloudinaryUrl))
     throw new ArgumentException("CLOUDINARY_URL is not set correctly.");
 }
 
-// Instantiate the Cloudinary object
+// Cloudinary
 Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
 cloudinary.Api.Secure = true;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton(cloudinary); // Register Cloudinary as a singleton service
+builder.Services.AddSingleton(cloudinary); // Register Cloudinary
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -43,16 +43,16 @@ builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
 // Configure Identity without roles
 builder.Services.AddIdentityCore<UserModel>(options =>
 {
-    // Configure identity options if needed
-    options.Password.RequireDigit = true; // Require a digit
-    options.Password.RequireLowercase = true; // Require lowercase letter
-    options.Password.RequireUppercase = false; // Don't require uppercase
-    options.Password.RequiredLength = 8; // Minimum length of 8 characters
-    options.Password.RequireNonAlphanumeric = false; // Don't require special characters
+    // Configuration for identity options
+    options.Password.RequireDigit = true; // requiring number for password
+    options.Password.RequireLowercase = true; // requiring lowercase characters for password
+    options.Password.RequireUppercase = false; // not requiring uppercase for password
+    options.Password.RequiredLength = 8; // min 8 characters for password
+    options.Password.RequireNonAlphanumeric = false; // password doesnt need special characters
     options.User.RequireUniqueEmail = true;
 })
     .AddUserStore<UserStore>()
-    .AddSignInManager<SignInManager<UserModel>>() // Explicitly add SignInManager
+    .AddSignInManager<SignInManager<UserModel>>()
     .AddDefaultTokenProviders();
 
 // Configure authentication services
@@ -106,6 +106,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Tasklist}/{action=Tasklists}/");
 
 app.Run();

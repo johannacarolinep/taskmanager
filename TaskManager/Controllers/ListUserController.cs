@@ -12,15 +12,13 @@ namespace TaskManager.Controllers;
 public class ListUserController : Controller {
 
     private readonly TasklistMethods _tasklistMethods;
-    private readonly TaskMethods _taskMethods;
     private readonly ListUserMethods _listUserMethods;
     private readonly UserMethods _userMethods;
 
     private readonly EmailService _emailService;
 
-    public ListUserController(TasklistMethods tasklistMethods, TaskMethods taskMethods, ListUserMethods listUserMethods, UserMethods userMethods, EmailService emailService) {
+    public ListUserController(TasklistMethods tasklistMethods, ListUserMethods listUserMethods, UserMethods userMethods, EmailService emailService) {
         _tasklistMethods = tasklistMethods;
-        _taskMethods = taskMethods;
         _listUserMethods = listUserMethods;
         _userMethods = userMethods;
         _emailService = emailService;
@@ -47,14 +45,12 @@ public class ListUserController : Controller {
             InvitingUsername = username
         };
 
-        Console.WriteLine("Before returning the form view");
         return View(model);
     }
 
 
     [HttpPost]
     public async Task<IActionResult> Invite(InviteUserViewModel model) {
-        Console.WriteLine("Inside Task action");
         // Validate inputs
         if (!ModelState.IsValid) {
             return View(model);
@@ -74,8 +70,6 @@ public class ListUserController : Controller {
         // Retrieve invited user by email
         var inviteUser = await _userMethods.FindByEmailAsync(model.Email, CancellationToken.None);
 
-        Console.WriteLine($"inviteUser: {inviteUser}");
-
         var newListUser = new ListUserModel {
             ListId = model.ListId,
             Role = model.Role,
@@ -83,12 +77,9 @@ public class ListUserController : Controller {
             IsActive = false
         };
 
-        Console.WriteLine("newListUser was created!!");
-
         // Check inviteUser's current relation to list
         if (inviteUser != null) {
             var inviteUserRole = _listUserMethods.GetUserRoleInList(inviteUser.Id, model.ListId);
-            Console.WriteLine($"{inviteUser}'s role in the list is {inviteUserRole}");
             if (inviteUserRole != null) {
                 ModelState.AddModelError(string.Empty, "This user is already a member of the list.");
                 return View(model);
@@ -98,16 +89,12 @@ public class ListUserController : Controller {
             newListUser.InviteEmail = model.Email;
         }
 
-        Console.WriteLine("Before adding to database");
-
         // Add the ListUser to the database
         string errorMsg;
         _listUserMethods.AddListUser(newListUser, out errorMsg);
 
-        Console.WriteLine("After adding to database!");
 
         if (!string.IsNullOrWhiteSpace(errorMsg)) {
-            Console.WriteLine($"errorsMsg: {errorMsg}");
             ModelState.AddModelError(string.Empty, errorMsg);
             return View(model);
         }
@@ -118,7 +105,7 @@ public class ListUserController : Controller {
     
         if (!emailSent) {
             ModelState.AddModelError(string.Empty, "An invitation was created but the email failed to send. The invited user will be able to see the invitation in the UI.");
-            return View(model); // Return to the view if email sending fails
+            return View(model);
         }
 
         TempData["SuccessMessage"] = "Invitation sent successfully!";
@@ -179,7 +166,7 @@ public class ListUserController : Controller {
         // Fetch pending invitations for the current user
         var tasklists = _listUserMethods.GetTasklistsWithPendingInvitations(userId.Value);
 
-        return View(tasklists); // Pass tasklists directly to the view
+        return View(tasklists);
     }
 
 
@@ -194,16 +181,15 @@ public class ListUserController : Controller {
         var listUser = _listUserMethods.GetListUserByListAndUser(listId, userId.Value);
 
         if (listUser == null) {
-            // If the invite was not found, return an error or redirect
+            // If the invite was not found
             TempData["ErrorMessage"] = "Invite not found or no pending invitation.";
             return RedirectToAction("Invitations");
         }
 
-        // Update the invitation status and activation status
+        // Update the relationship status
         listUser.InvitationStatus = InvitationStatus.Accepted;
         listUser.IsActive = true;
 
-        // Save the changes
         string errorMsg;
         _listUserMethods.UpdateListUser(listUser, out errorMsg);
 
@@ -238,44 +224,41 @@ public class ListUserController : Controller {
 
     [HttpGet]
     public IActionResult LeaveList(int listId) {
-        // Make sure user has permission to delete tasklist
+        // Check permissions (not owner)
         int? userId = User.GetUserId();
         if (!userId.HasValue) {
             return RedirectToAction("Login", "User");
         }
 
-        // make sure user is not the owner of the tasklist
         var userRole = _listUserMethods.GetUserRoleInList(userId.Value, listId);
         if (userRole == UserListRole.Owner) {
             return Forbid();
         }
 
         // Retrieve the tasklist to show in the confirmation view
-        var tasklist = _tasklistMethods.GetTasklistById(listId, userId.Value); // Ensure this method retrieves the full tasklist model
+        var tasklist = _tasklistMethods.GetTasklistById(listId, userId.Value);
         if (tasklist == null) {
-            return NotFound(); // Handle case where tasklist does not exist
+            return NotFound();
         }
 
-        return View(tasklist); // Pass the tasklist model to the view
+        return View(tasklist);
     }
 
 
-    // Action to delete the tasklist
     [HttpPost]
     public IActionResult LeaveList(TasklistModel tasklist) {
-        // Ensure the user has permission to delete the tasklist
+        // Check permissions (not owner)
         int? userId = User.GetUserId();
         if (!userId.HasValue) {
             return RedirectToAction("Login", "User");
         }
 
-        // make sure user is not the owner of the tasklist
         var userRole = _listUserMethods.GetUserRoleInList(userId.Value, tasklist.Id);
         if (userRole == UserListRole.Owner) {
             return Forbid();
         }
 
-        // Set the tasklist and its tasks as inactive. delete the listuser
+        // Delete the ListUser
         string errorMsg = "";
         if (_listUserMethods.DeleteListUserByUserAndList(userId.Value, tasklist.Id, out errorMsg)) {
             TempData["SuccessMessage"] = "You left the tasklist successfully.";
@@ -289,7 +272,7 @@ public class ListUserController : Controller {
 
     [HttpGet]
     public IActionResult UpdateRoles(int listId, string listTitle) {
-        // Retrieve the current user's role to ensure they have permissions
+        // Check permissions (owner or admin)
         int? userId = User.GetUserId();
         if (!userId.HasValue) {
             return RedirectToAction("Login", "User");
@@ -297,16 +280,15 @@ public class ListUserController : Controller {
 
         var userRole = _listUserMethods.GetUserRoleInList(userId.Value, listId);
         if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
-            return Forbid(); // Only Owner or Admin can access this action
+            return Forbid();
         }
 
-        // Fetch contributors for the specified task list
+        // get the lists users
         var contributors = _listUserMethods.GetContributorsByListId(listId);
 
         var owner = contributors.FirstOrDefault(c => c.Role == UserListRole.Owner.ToString());
         contributors.Remove(owner);
 
-        // Map data to the UpdateRolesViewModel
         var viewModel = new UpdateRolesViewModel {
             ListId = listId,
             ListTitle = listTitle,
@@ -325,16 +307,12 @@ public class ListUserController : Controller {
             return View(model);
         }
 
-        Console.WriteLine("Inside the update method");
-        Console.WriteLine($"List title: {model.ListTitle}");
-
-        // Retrieve the current user's ID
+        // Check permissions
         int? userId = User.GetUserId();
         if (!userId.HasValue) {
             return RedirectToAction("Login", "User");
         }
 
-        // Check if the user has permission to update roles
         var userRole = _listUserMethods.GetUserRoleInList(userId.Value, model.ListId);
         if (userRole != UserListRole.Owner && userRole != UserListRole.Admin) {
             return Forbid();
@@ -344,13 +322,11 @@ public class ListUserController : Controller {
 
         // Loop through the ListUsers and update their roles
         foreach (var contributor in model.ListUsers) {
-            Console.WriteLine($"Contributor: {contributor.Username} should update to {contributor.Role}");
             // Update the role in the database
             string errorMsg;
             bool success = _listUserMethods.UpdateUserRole(contributor.ListUserId, contributor.Role, out errorMsg);
 
             if (!success) {
-                // Handle error (e.g., log it, set a model error, etc.)
                 ModelState.AddModelError(string.Empty, $"Failed to update role for user: {contributor.Username}");
                 hasErrors = true;
             }
@@ -367,16 +343,15 @@ public class ListUserController : Controller {
 
     [HttpGet]
     public IActionResult TransferOwnership(int listId, string listTitle) {
-        Console.WriteLine("Inside TranserOwnership");
+        // check permissions
         int? userId = User.GetUserId();
         if (!userId.HasValue) {
             return RedirectToAction("Login", "User");
         }
 
-        // Check if the user is the owner of the list
         var userRole = _listUserMethods.GetUserRoleInList(userId.Value, listId);
         if (userRole != UserListRole.Owner) {
-            return Forbid(); // Only the owner can transfer ownership
+            return Forbid();
         }
 
         // Fetch contributors to populate the selection list (excluding the owner)
@@ -384,11 +359,10 @@ public class ListUserController : Controller {
                             .Where(c => c.Role != UserListRole.Owner.ToString())
                             .ToList();
 
-        // Map to the view model
         var viewModel = new TransferOwnershipViewModel {
             ListId = listId,
             ListTitle = listTitle,
-            Contributors = contributors // Populate with all eligible users
+            Contributors = contributors
         };
 
         return View(viewModel);
@@ -398,13 +372,12 @@ public class ListUserController : Controller {
     [HttpPost]
     public IActionResult TransferOwnership(TransferOwnershipViewModel model) {
 
-        // Check if the current user is logged in and retrieve their user ID
+        // Check permissions (owner)
         int? userId = User.GetUserId();
         if (!userId.HasValue) {
             return RedirectToAction("Login", "User");
         }
 
-        // Ensure the current user is the owner of the list
         var currentRole = _listUserMethods.GetUserRoleInList(userId.Value, model.ListId);
         if (currentRole != UserListRole.Owner) {
             return Forbid();
@@ -413,7 +386,7 @@ public class ListUserController : Controller {
         // Validate that a new owner has been selected and that the transfer is confirmed
         if (model.NewOwnerId <= 0 || !model.ConfirmTransfer) {
             ModelState.AddModelError(string.Empty, "Please select a user to transfer ownership to and confirm the action.");
-            // Repopulate the contributors list before returning the view
+            // Repopulate the contributors list
             model.Contributors = _listUserMethods.GetContributorsByListId(model.ListId)
                             .Where(c => c.Role != UserListRole.Owner.ToString())
                             .ToList();
@@ -422,7 +395,7 @@ public class ListUserController : Controller {
 
         string errorMsg;
 
-        // Update current owner's role to Admin
+        // Update current owner's role to Admin and the selected user to owner
         if (!_listUserMethods.TransferOwnership(model.ListId, userId.Value, model.NewOwnerId, out errorMsg)) {
             ModelState.AddModelError(string.Empty, errorMsg);
 

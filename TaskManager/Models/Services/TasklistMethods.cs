@@ -11,7 +11,6 @@ public class TasklistMethods {
     private readonly string _connectionString;
 
     public TasklistMethods(IConfiguration configuration) {
-
             _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
@@ -19,8 +18,7 @@ public class TasklistMethods {
     /// Creates and opens a SQL connection using the configuration connection string.
     /// </summary>
     /// <returns>An open SqlConnection object.</returns>
-    private SqlConnection GetOpenConnection()
-    {
+    private SqlConnection GetOpenConnection() {
         var dbConnection = new SqlConnection(_connectionString);
         dbConnection.Open();
         return dbConnection;
@@ -263,8 +261,8 @@ public class TasklistMethods {
                     return rowsAffected > 0;
                 }
             }
-        } catch (Exception ex) {
-            errorMsg = $"Failed to update tasklist. Please try again. {ex}";
+        } catch (Exception) {
+            errorMsg = $"Failed to update tasklist. Please try again.";
             return false;
         }
     }
