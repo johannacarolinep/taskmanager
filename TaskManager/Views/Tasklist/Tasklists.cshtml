@@ -4,33 +4,38 @@
     ViewData["Title"] = "My lists";
 }
 
-<section class="std-section">
-<h1>All of your tasklists</h1>
+<div class="bg-white py-3">
+    <section class="std-container">
+        <h1>All of your tasklists</h1>
 
-<p>This is the overview page, where you can see all of the tasklists you're part of.</p>
+        <p>This is the overview page, where you can see all of the tasklists you're part of.</p>
 
-<p>
-    <a asp-action="Create" class="std-link">Create New Tasklist >></a>
-</p>
+        <p>
+            <a asp-action="Create" class="link-btn btn-brand">Create New Tasklist >></a>
+        </p>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["ErrorMessage"]
-    </div>
-}
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+    </section>
+</div>
 
+<section class="std-container my-3">
+<h2>Your tasklists</h2>
 <!-- Sorting Links -->
 <div>
-    <a asp-action="Tasklists" asp-route-sortOrder="title" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Title</a> |
-    <a asp-action="Tasklists" asp-route-sortOrder="date" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Creation Date</a>
+    <a class="btn rounded-pill bg-brand me-1" link-btn asp-action="Tasklists" asp-route-sortOrder="title" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Title</a>
+    <a class="btn rounded-pill bg-brand" asp-action="Tasklists" asp-route-sortOrder="date" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Creation Date</a>
 </div>
 
 @if (!Model.Any()) {
@@ -71,7 +76,7 @@
                     } else {
                         <a class="link-btn m-1" asp-controller="ListUser" asp-action="LeaveList" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Leave tasklist"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
                     }
-                    <a class="link-btn btn-primary m-1" asp-action="Tasklist" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Open tasklist"><i class="fa-regular fa-folder-open"></i></a>
+                    <a class="link-btn btn-brand m-1" asp-action="Tasklist" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Open tasklist"><i class="fa-regular fa-folder-open"></i></a>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<TaskManager.Models.UserModel> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -10,44 +13,50 @@
     <script src="https://kit.fontawesome.com/a0a89111ce.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Tasklist" asp-action="Tasklists">TaskManager</a>
+    <header class="border-bottom box-shadow bg-white ">
+        <nav class="navbar navbar-expand-lg navbar-toggleable-lg navbar-light std-container">
+                <a class="navbar-brand ms-0" asp-area="" asp-controller="Tasklist" asp-action="Tasklists">TaskManager</a>
+
+                <!-- Image visible to logged in users -->
+                @if (User.Identity.IsAuthenticated) {
+                        var user = await UserManager.GetUserAsync(User);
+                        var profileImage = user?.Image;
+                <div class="d-flex round bg-neutral border-neutral order-lg-3 ms-auto me-2 me-lg-0" data-bs-toggle="tooltip" data-bs-title="Logged in as @User.Identity.Name" >
+                    <img src="@profileImage" class="cover round" height="40" alt="Logged in as: @User.Identity.Name" />
+                </div>
+                }
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
+                    <ul class="navbar-nav">
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <!-- Links visible to logged-in users -->
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="AccountCenter">Account Center</a>
-                                </li>
-                                <li class="nav-item">
+                                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Tasklists" ? "active" : "")">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Tasklist" asp-action="Tasklists">My lists</a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Invitations" ? "active" : "")">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="ListUser" asp-action="Invitations">Invitations</a>
                                 </li>
-                                
+                                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "AccountCenter" ? "active" : "")">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="AccountCenter">Account Center</a>
+                                </li>
                                 <form asp-controller="User" asp-action="Logout" method="post" class="form-inline nav-item">
                                     <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
                                 </form>
-                                <span class="nav-item my-auto fw-bold">Logged in as: @User.Identity.Name</span>
                             } else {
-                                <li class="nav-item">
+                                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Signup" ? "active" : "")">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Signup">Sign up</a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Login" ? "active" : "")">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Log in</a>
                                 </li>
                             }
                     </ul>
                 </div>
-            </div>
         </nav>
     </header>
     
@@ -57,7 +66,7 @@
     
 
     <footer class="border-top footer text-muted">
-        <div class="container">
+        <div class="std-container">
             &copy; 2024 - TaskManager
         </div>
     </footer>
