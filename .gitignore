@@ -139,3 +139,5 @@ app.publish/
 # Logs
 logs/
 *.log
+
+.env

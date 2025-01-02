@@ -13,3 +13,4 @@ public class UserModel : IdentityUser<int> {
 
     public DateTime? LastLogin { get; set; }
 }
+

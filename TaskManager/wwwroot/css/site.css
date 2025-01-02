@@ -1,22 +1,163 @@
+/* ------------------------------GENERAL STYLES */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+  --clr-brand--primary: #5596f7;
+  --clr-accent--light: #a885ff;
+  --clr-accent--dark: #311c96;
+  --clr-neutral: #f4f2f2;
+  --clr-dark: #1c1e23;
+  --clr-btn-red: #fc5151;
+  --clr-btn-red-dark: #b11919;
+  --clr-btn-edit: #ffeb12;
+  --clr-btn-edit-dark: #e6d221;
+  --clr-btn-primary-dark: #225db6;
+  --ff-primary: 'Poppins', sans-serif;
+  --ff-secondary: 'Fredoka', sans-serif;
+}
+
 html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
+  font-size: 1rem;
   position: relative;
   min-height: 100%;
 }
 
 body {
   margin-bottom: 60px;
+  font-family: var(--ff-primary);
+  background-color: var(--clr-neutral);
+  color: var(--clr-dark);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--ff-secondary);
+}
+
+.std-section {
+  width: 95%;
+  margin: 0 auto;
+}
+
+/* -------------------------------- SHAPES AND SIZES */
+
+.round {
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+}
+
+.w-40 {
+  width: 40px;
+}
+
+
+/* -------------------------------- COLOURS */
+.bg-neutral {
+  background-color: var(--clr-neutral);
+}
+
+.border-neutral {
+  border: 0.5px solid #e4e4e4;
+}
+
+.clr-primary {
+  color: var(--clr-brand--primary);
+}
+
+/* ------------------------------- BUTTONS */
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.link-btn {
+  text-decoration: none;
+  text-align: center;
+  padding: 0.5rem;
+  background-color: var(--clr-neutral);
+  color: var(--clr-dark);
+  border-radius: 6px;
+  box-shadow: 5px 5px 3px #fafafa;
+}
+
+.link-btn:focus,
+.link-btn:active,
+.link-btn:hover {
+  color: var(--clr-dark);
+}
+
+.btn-red {
+  background-color: var(--clr-btn-red);
+}
+
+.btn-red:focus,
+.btn-red:active,
+.btn-red:hover {
+  background-color: var(--clr-btn-red-dark);
+  color: #ffffff;
+}
+
+
+.btn-edit {
+  background-color: var(--clr-btn-edit);
+}
+
+.btn-edit:focus,
+.btn-edit:active,
+.btn-edit:hover {
+  background-color: var(--clr-btn-edit-dark);
+  color: #ffffff;
+}
+
+.btn-primary {
+  background-color: var(--clr-brand--primary);
+}
+
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:hover {
+  background-color: var(--clr-btn-primary-dark);
+  color: #ffffff;
+}
+
+.std-link {
+  text-decoration: none;
+  color: var(--clr-dark);
+}
+
+/* ----------------------------------- Badges */
+.badge-bright {
+  background-color: var(--clr-accent--light);
+  color: var(--clr-dark);
+  font-size: 0.7em;
+  font-weight: normal;
+  font-family: var(--ff-primary);
+}
+
+/* ----------------------------------- Cards */
+
+.card {
+  border: 0.5px solid #ededed;
+}
+
+
+@media (min-width: 768px) {
+  html {
+    font-size: 1.1rem;
+  }
+
+  .std-section {
+    width: 80%;
+    margin: 0 auto;
+  }
 }

@@ -4,11 +4,13 @@
     ViewData["Title"] = "My lists";
 }
 
+<section class="std-section">
 <h1>All of your tasklists</h1>
 
-<p>Logged in users can view all tasklists they are a contributor for, and create new tasklists.
+<p>This is the overview page, where you can see all of the tasklists you're part of.</p>
+
 <p>
-    <a asp-action="Create">Create New Tasklist</a>
+    <a asp-action="Create" class="std-link">Create New Tasklist >></a>
 </p>
 
 @if (TempData["SuccessMessage"] != null)
@@ -36,34 +38,41 @@
 } else {
     @foreach (var tasklist in Model) {
         if (tasklist.IsActive == true) {
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">@tasklist.Title</h5>
-                    <p class="card-text">@tasklist.Description</p>
-                    <p class="card-text">Created on: @tasklist.CreatedAt.ToShortDateString()</p>
-                    <p class="card-text">Role: @tasklist.UserRole</p>
-
-                    <div class="contributors">
+            <div class="card my-3">
+                <div class="card-body row">
+                    <div class="card-text-blk col-md-10">
+                        <h3 class="card-title">@tasklist.Title <span class="badge rounded-pill badge-bright">@tasklist.UserRole</span></h3>
+                        <p class="card-text">@tasklist.Description <span class="fw-lighter">(Created @tasklist.CreatedAt.ToShortDateString())</span></p>
+                    <div class="contributors d-flex">
                         @if (tasklist.Contributors.Count <= 3) {
                             @foreach (var contributor in tasklist.Contributors) {
-                                <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="30" title="@contributor.UserName" />
+                                <div class="d-flex round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="@contributor.UserName">
+                                    <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="40" class="cover round" />
+                                </div>
                             }
                         } else {
                             // Show current user's image first and count remaining
                             var otherContributorsCount = tasklist.Contributors.Count - 1;
-                            <img src="@tasklist.Contributors.First().ProfileImage" alt="@tasklist.Contributors.First().UserName" height="30" title="@tasklist.Contributors.First().UserName" />
-                            <span class="other-count">+@otherContributorsCount other users</span>
+                            <div class="d-flex round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="@tasklist.Contributors.First().UserName" >
+                                <img src="@tasklist.Contributors.First().ProfileImage" class="cover round" height="40" alt="@tasklist.Contributors.First().UserName" />
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center w-40 round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="+ @otherContributorsCount other users">
+                                <span class="other-count fw-bold">+@otherContributorsCount</span>
+                            </div>
                         }
                     </div>
+                    </div>
+                    <div class="tl-controls col-md-2 d-flex flex-column">
                     @if (tasklist.UserRole == "Owner" || tasklist.UserRole == "Admin") {
-                        <a asp-action="EditList" asp-route-listId="@tasklist.Id">Edit list</a>
+                        <a class="link-btn btn-edit m-1" asp-action="EditList" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Edit tasklist"><i class="fa-regular fa-pen-to-square"></i></a>
                     } 
                     @if (tasklist.UserRole == "Owner") {
-                        <a asp-action="Delete" asp-route-listId="@tasklist.Id" class="text-danger">Delete</a>
+                        <a class="link-btn btn-red m-1" asp-action="Delete" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Delete tasklist"><i class="fa-solid fa-trash"></i></a>
                     } else {
-                        <a asp-controller="ListUser" asp-action="LeaveList" asp-route-listId="@tasklist.Id">Leave tasklist</a>
+                        <a class="link-btn m-1" asp-controller="ListUser" asp-action="LeaveList" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Leave tasklist"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
                     }
-                    <a asp-action="Tasklist" asp-route-listId="@tasklist.Id">Open tasklist</a>
+                    <a class="link-btn btn-primary m-1" asp-action="Tasklist" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Open tasklist"><i class="fa-regular fa-folder-open"></i></a>
+                    </div>
                 </div>
             </div>
         } else {
@@ -86,3 +95,5 @@
         @ViewBag.error
     </div>
 }
+
+</section>
