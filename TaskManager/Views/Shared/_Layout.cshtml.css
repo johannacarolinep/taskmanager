@@ -7,9 +7,9 @@ a.navbar-brand {
   word-break: break-all;
 }
 
-.border-top {
+/* .border-top {
   border-top: 1px solid #e5e5e5;
-}
+} */
 
 .border-bottom {
   border-bottom: 1px solid #e5e5e5;
@@ -19,10 +19,10 @@ a.navbar-brand {
   box-shadow: 0 .25rem .50rem rgba(106, 106, 106, 0.05);
 }
 
-button.accept-policy {
+/* button.accept-policy {
   font-size: 1rem;
   line-height: inherit;
-}
+} */
 
 .footer {
   position: absolute;

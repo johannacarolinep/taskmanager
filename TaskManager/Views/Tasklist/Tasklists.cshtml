@@ -6,13 +6,13 @@
 
 <div class="bg-white py-3">
     <section class="std-container">
-        <h1>All of your tasklists</h1>
+        <h1 class="clr-accent-bright">Hey @User.Identity.Name!</h1>
 
-        <p>This is the overview page, where you can see all of the tasklists you're part of.</p>
+        <h2>From this page you can easily access all your tasklists, or create a new one and get your next project organized!</h2>
 
-        <p>
+        <div class="py-3">
             <a asp-action="Create" class="link-btn btn-brand">Create New Tasklist >></a>
-        </p>
+        </div>
 
         @if (TempData["SuccessMessage"] != null)
         {
@@ -34,8 +34,8 @@
 <h2>Your tasklists</h2>
 <!-- Sorting Links -->
 <div>
-    <a class="btn rounded-pill bg-brand me-1" link-btn asp-action="Tasklists" asp-route-sortOrder="title" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Title</a>
-    <a class="btn rounded-pill bg-brand" asp-action="Tasklists" asp-route-sortOrder="date" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Creation Date</a>
+    <a class="btn rounded-pill bg-brand me-1 text-white" asp-action="Tasklists" asp-route-sortOrder="title" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Title</a>
+    <a class="btn rounded-pill bg-brand text-white" asp-action="Tasklists" asp-route-sortOrder="date" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Creation Date</a>
 </div>
 
 @if (!Model.Any()) {
