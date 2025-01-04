@@ -26,7 +26,7 @@ public class TasklistMethods {
 
 
     // get lists incl disabledd lists
-    public List<TasklistModel> GetTasklistsForUser(int userId) {
+    public List<TasklistModel> GetTasklistsForUser(int userId, string currentUserName) {
         List<TasklistModel> tasklists = new List<TasklistModel>();
 
         using (SqlConnection dbConnection = GetOpenConnection()) {
@@ -95,6 +95,20 @@ public class TasklistMethods {
                 }
             }
         }
+
+            // Reorder contributors for each tasklist to ensure the current user is first
+            foreach (var tasklist in tasklists)
+            {
+                var currentUser = tasklist.Contributors
+                    .FirstOrDefault(c => c.UserName != null && c.UserName == currentUserName);
+
+                if (currentUser != null)
+                {
+                    // Move the current user to the first position
+                    tasklist.Contributors.Remove(currentUser);
+                    tasklist.Contributors.Insert(0, currentUser);
+                }
+            }
 
         return tasklists;
     }

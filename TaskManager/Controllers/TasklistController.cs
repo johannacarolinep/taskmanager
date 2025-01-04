@@ -29,7 +29,8 @@ public class TasklistController : Controller {
 
         if (userId.HasValue) {
             // Fetch task lists
-            tasklists = _tasklistMethods.GetTasklistsForUser(userId.Value);
+            string currentUserName = User.Identity.Name;
+            tasklists = _tasklistMethods.GetTasklistsForUser(userId.Value, currentUserName);
         } else {
             // Handle case where user is not properly logged in or identity is misconfigured
             return RedirectToAction("Login", "User");

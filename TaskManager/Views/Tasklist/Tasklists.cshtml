@@ -56,18 +56,22 @@
                         <h3 class="card-title">@tasklist.Title <span class="badge rounded-pill badge-bright">@tasklist.UserRole</span></h3>
                         <p class="card-text">@tasklist.Description <span class="fw-lighter">(Created @tasklist.CreatedAt.ToShortDateString())</span></p>
                     <div class="contributors d-flex">
-                        @if (tasklist.Contributors.Count <= 3) {
+                        @if (tasklist.Contributors.Count <= 4) {
                             @foreach (var contributor in tasklist.Contributors) {
                                 <div class="d-flex round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="@contributor.UserName">
                                     <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="40" class="cover round" />
                                 </div>
                             }
                         } else {
+                            // Show the first 3 contributors
+                            var firstThreeContributors = tasklist.Contributors.Take(3).ToList();
+                            foreach (var contributor in firstThreeContributors) {
+                                <div class="d-flex round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="@contributor.UserName">
+                                    <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="40" class="cover round" />
+                                </div>
+                            }
                             // Show current user's image first and count remaining
-                            var otherContributorsCount = tasklist.Contributors.Count - 1;
-                            <div class="d-flex round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="@tasklist.Contributors.First().UserName" >
-                                <img src="@tasklist.Contributors.First().ProfileImage" class="cover round" height="40" alt="@tasklist.Contributors.First().UserName" />
-                            </div>
+                            var otherContributorsCount = tasklist.Contributors.Count - 3;
                             <div class="d-flex justify-content-center align-items-center w-40 round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="+ @otherContributorsCount other users">
                                 <span class="other-count fw-bold">+@otherContributorsCount</span>
                             </div>

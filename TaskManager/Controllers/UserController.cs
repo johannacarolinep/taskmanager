@@ -525,7 +525,8 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
 
             // Attempt to delete user's related entities.
             string errorMsg = "";
-            List<TasklistModel> tasklists = _tasklistMethods.GetTasklistsForUser(user.Id);
+            string currentUserName = User.Identity.Name;
+            List<TasklistModel> tasklists = _tasklistMethods.GetTasklistsForUser(user.Id, currentUserName);
             foreach(var tasklist in tasklists) {
                 if (tasklist.UserRole == "Owner") {
                     _tasklistMethods.SoftDeleteTasklist(tasklist.Id, user.Id, out errorMsg);
