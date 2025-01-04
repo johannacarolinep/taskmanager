@@ -4,14 +4,21 @@
     ViewData["Title"] = "My lists";
 }
 
-<div class="bg-white py-3">
-    <section class="std-container">
-        <h1 class="clr-accent-bright">Hey @User.Identity.Name!</h1>
+<div class="bg-white py-3 py-lg-5">
+    <section class="std-container row">
+        <div class="col-lg-7 pe-lg-3">
+            <h1 class="clr-accent-bright">Hey @User.Identity.Name!</h1>
 
-        <h2>From this page you can easily access all your tasklists, or create a new one and get your next project organized!</h2>
-
-        <div class="py-3">
-            <a asp-action="Create" class="link-btn btn-brand">Create New Tasklist >></a>
+            <h2><span class="fs-lg-smaller">From this page you can easily access all your tasklists, or create a new one and get your next project organized!</span></h2>
+        </div>
+        <div class="py-3 d-flex flex-column align-items-center justify-content-center col-lg-5">
+            <h2 class="my-carousel no-wrap">
+                    <span class="carousel-text clr-primary">Renovation project -></span>
+                    <span class="carousel-text clr-accent-bright">School work -></span>
+                    <span class="carousel-text clr-accent-warm">Next big thing -></span>
+                    <span class="carousel-text clr-accent-bright">Grand plan -></span>
+            </h2>
+            <a asp-action="Create" class="link-btn btn-brand">Create New Tasklist!</a>
         </div>
 
         @if (TempData["SuccessMessage"] != null)

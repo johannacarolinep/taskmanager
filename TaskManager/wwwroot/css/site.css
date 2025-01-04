@@ -6,6 +6,7 @@
 :root {
   --clr-brand: #65b2ff;
   --clr-accent--bright: #b662ff;
+  --clr-accent--warm: #ff5858;
   --clr-neutral: #f4f2f2;
   --clr-dark: #1c1e23;
   --clr-accent--dark: #311c96;
@@ -77,6 +78,10 @@ h6 {
 
 .clr-accent-bright {
   color: var(--clr-accent--bright);
+}
+
+.clr-accent-warm {
+  color: var(--clr-accent--warm);
 }
 
 /* ------------------------------- BUTTONS */
@@ -154,6 +159,67 @@ h6 {
   border: 0.5px solid #ededed;
 }
 
+/* ------------------------------------ Carousel */
+.my-carousel {
+  position: relative;
+  height: 1.5em;
+  width: 100%;
+  overflow: hidden;
+  text-align: center;
+  padding: 10px;
+}
+
+.carousel-text {
+  position: absolute;
+  top: 50%;
+  /* Align vertically */
+  left: 50%;
+  /* Align horizontally */
+  transform: translate(-50%, -50%) translateY(100%);
+  width: 100%;
+  opacity: 0;
+  animation: carousel-animation 16s infinite ease-in-out;
+}
+
+.carousel-text:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.carousel-text:nth-child(2) {
+  animation-delay: 4s;
+}
+
+.carousel-text:nth-child(3) {
+  animation-delay: 8s;
+}
+
+.carousel-text:nth-child(4) {
+  animation-delay: 12s;
+}
+
+@keyframes carousel-animation {
+
+  0%,
+  15% {
+    /* Before becoming active */
+    opacity: 0;
+    transform: translate(-50%, 100%);
+  }
+
+  20%,
+  40% {
+    /* While active */
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+
+  45%,
+  100% {
+    /* After transitioning out */
+    opacity: 0;
+    transform: translate(-50%, -100%);
+  }
+}
 
 @media (min-width: 768px) {
   html {
@@ -161,7 +227,20 @@ h6 {
   }
 
   .std-container {
-    width: 80%;
+    width: 85%;
     margin: 0 auto;
+  }
+}
+
+@media (min-width: 998px) {
+
+  .std-container {
+    width: 80%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .fs-lg-smaller {
+    font-size: 0.8em;
   }
 }
