@@ -27,7 +27,6 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
   font-family: var(--ff-primary);
   background-color: var(--clr-neutral);
   color: var(--clr-dark);
