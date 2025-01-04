@@ -13,7 +13,6 @@
   --clr-btn-red: #ff5858;
   --clr-btn-red-dark: #b11919;
   --clr-btn-edit: #ffea00;
-  /* --clr-btn-edit: #ffec1c; */
   --clr-btn-edit-dark: #e4ce0a;
   --clr-btn-brand-dark: #519eeb;
   --ff-primary: 'Poppins', sans-serif;
@@ -30,6 +29,13 @@ body {
   font-family: var(--ff-primary);
   background-color: var(--clr-neutral);
   color: var(--clr-dark);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex-grow: 1;
 }
 
 h1,
@@ -65,6 +71,10 @@ h6 {
 
 .bg-brand {
   background-color: var(--clr-brand);
+}
+
+.bg-accent-bright {
+  background-color: var(--clr-accent--bright);
 }
 
 .border-neutral {
@@ -158,66 +168,24 @@ h6 {
   border: 0.5px solid #ededed;
 }
 
-/* ------------------------------------ Carousel */
-.my-carousel {
-  position: relative;
-  height: 1.5em;
-  width: 100%;
-  overflow: hidden;
-  text-align: center;
-  padding: 10px;
+/* ----------------------------------- Accordion */
+
+.accordion-button:not(.collapsed) {
+  background-color: white;
 }
 
-.carousel-text {
-  position: absolute;
-  top: 50%;
-  /* Align vertically */
-  left: 50%;
-  /* Align horizontally */
-  transform: translate(-50%, -50%) translateY(100%);
-  width: 100%;
-  opacity: 0;
-  animation: carousel-animation 16s infinite ease-in-out;
+.acc-username-btn:not(.collapsed) {
+  color: var(--clr-accent--bright);
 }
 
-.carousel-text:nth-child(1) {
-  animation-delay: 0s;
+.acc-email-btn:not(.collapsed),
+.acc-image-btn:not(.collapsed) {
+  color: var(--clr-brand);
 }
 
-.carousel-text:nth-child(2) {
-  animation-delay: 4s;
-}
-
-.carousel-text:nth-child(3) {
-  animation-delay: 8s;
-}
-
-.carousel-text:nth-child(4) {
-  animation-delay: 12s;
-}
-
-@keyframes carousel-animation {
-
-  0%,
-  15% {
-    /* Before becoming active */
-    opacity: 0;
-    transform: translate(-50%, 100%);
-  }
-
-  20%,
-  40% {
-    /* While active */
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
-
-  45%,
-  100% {
-    /* After transitioning out */
-    opacity: 0;
-    transform: translate(-50%, -100%);
-  }
+.acc-password-btn:not(.collapsed),
+.acc-deactivate-btn:not(.collapsed) {
+  color: var(--clr-accent--warm);
 }
 
 @media (min-width: 768px) {

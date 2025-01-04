@@ -1,68 +1,119 @@
 @model TaskManager.ViewModels.AccountCenterViewModel
 
-<h1>Account Center</h1>
-<p>Manage your account settings.</p>
+<div class="bg-white">
+    <section class="std-container py-3 py-lg-4">
+        <h1 class="clr-primary">Account Center</h1>
+        <h2><span class="lg-smaller">Manage your account settings.</span></h2>
+    </section>
+</div>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+<div class="std-container py-3 py-lg-4">
+<div class="bg-white p-3 card">
+    <div class="accordion" id="accordionPanelsStayOpenExample">
+    <section class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+        <button class="accordion-button acc-username-btn collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+            Update Username
+        </button>
+        </h2>
+        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+        <div class="accordion-body">
+            <form asp-action="UpdateUsername std-form" method="post">
+                <p>Current username: @Model.CurrentUserName</p>
+                <input type="text" asp-for="NewUserName" placeholder="New Username" required />
+                <input type="submit" value="Update Username" class="btn btn-brand" />
+                <span asp-validation-for="NewUserName" class="text-danger"></span>
+            </form>
+        </div>
+        </div>
+    </section>
+    <section class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+        <button class="accordion-button collapsed fs-4 acc-email-btn" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+            Update Email
+        </button>
+        </h2>
+        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+        <div class="accordion-body">
+            <form asp-action="UpdateEmail" method="post">
+                <p>Current email: @Model.CurrentEmail</p>
+                <input type="email" asp-for="NewEmail" placeholder="New Email" required />
+                
+                <input type="submit" value="Update Email" />
+                <span asp-validation-for="NewEmail" class="text-danger"></span>
+            </form>            
+        </div>
+        </div>
+    </section>
+    <section class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+        <button class="accordion-button collapsed fs-4 acc-password-btn" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+            Change Password
+        </button>
+        </h2>
+        <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+        <div class="accordion-body">
+            <form asp-action="UpdatePassword" method="post">
+                <input type="password" asp-for="CurrentPassword" placeholder="Current Password" required />
+                <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                <input type="password" asp-for="NewPassword" placeholder="New Password" required />
+                <span asp-validation-for="NewPassword" class="text-danger"></span>
+                <input type="password" asp-for="ConfirmNewPassword" placeholder="Confirm New Password" required />
+                <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+                <input type="submit" value="Update Password" />
+            </form>
+        </div>
+        </div>
+    </section>
+    <section class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingFour">
+        <button class="accordion-button collapsed fs-4 acc-image-btn" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false" aria-controls="panelsStayOpen-collapseFour">
+            Upload New Profile Image
+        </button>
+        </h2>
+        <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingFour">
+        <div class="accordion-body">
+            <form asp-action="UpdateProfileImage" method="post" enctype="multipart/form-data">
+                <input type="file" asp-for="ProfileImage" accept="image/*" required />
+                <input type="submit" value="Upload Image" />
+            </form>
+
+
+            @if (!string.IsNullOrEmpty(Model.CurrentImage))
+            {
+                <div>
+                    <img src="@Model.CurrentImage" alt="Profile Image" style="max-width: 150px; max-height: 150px;" />
+                </div>
+            }
+        </div>
+        </div>
+    </section>
+    <section class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingFive">
+        <button class="accordion-button collapsed fs-4 acc-deactivate-btn" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="false" aria-controls="panelsStayOpen-collapseFive">
+            Deactivate Account
+        </button>
+        </h2>
+        <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingFive">
+        <div class="accordion-body">
+            <a asp-action="DeactivateAccount">Deactivate your account.</a>
+        </div>
+        </div>
+    </section>
     </div>
-}
+</div>
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["ErrorMessage"]
-    </div>
-}
-
-<!-- Update Username Form -->
-<h2>Update Username</h2>
-<form asp-action="UpdateUsername" method="post">
-    <p>Current username: @Model.CurrentUserName</p>
-    <input type="text" asp-for="NewUserName" placeholder="New Username" required />
-    <input type="submit" value="Update Username" />
-    <span asp-validation-for="NewUserName" class="text-danger"></span>
-</form>
-
-<!-- Update Email Form -->
-<h2>Update Email</h2>
-<form asp-action="UpdateEmail" method="post">
-    <p>Current email: @Model.CurrentEmail</p>
-    <input type="email" asp-for="NewEmail" placeholder="New Email" required />
-    
-    <input type="submit" value="Update Email" />
-    <span asp-validation-for="NewEmail" class="text-danger"></span>
-</form>
-
-<!-- Update Password Form -->
-<h2>Update Password</h2>
-<form asp-action="UpdatePassword" method="post">
-    <input type="password" asp-for="CurrentPassword" placeholder="Current Password" required />
-    <span asp-validation-for="CurrentPassword" class="text-danger"></span>
-    <input type="password" asp-for="NewPassword" placeholder="New Password" required />
-    <span asp-validation-for="NewPassword" class="text-danger"></span>
-    <input type="password" asp-for="ConfirmNewPassword" placeholder="Confirm New Password" required />
-    <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
-    <input type="submit" value="Update Password" />
-</form>
-
-<!-- Upload Profile Image Form -->
-<h2>Upload Profile Image</h2>
-<form asp-action="UpdateProfileImage" method="post" enctype="multipart/form-data">
-    <input type="file" asp-for="ProfileImage" accept="image/*" required />
-    <input type="submit" value="Upload Image" />
-</form>
-
-
-@if (!string.IsNullOrEmpty(Model.CurrentImage))
-{
-    <div>
-        <img src="@Model.CurrentImage" alt="Profile Image" style="max-width: 150px; max-height: 150px;" />
-    </div>
-}
-
-<!-- Deactivate account -->
-<h2>Deactivate Account</h2>
-<a asp-action="DeactivateAccount">Deactivate your account.</a>
+</div>
