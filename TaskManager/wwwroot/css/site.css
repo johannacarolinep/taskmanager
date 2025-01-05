@@ -9,6 +9,8 @@
   --clr-accent--warm: #ff5858;
   --clr-neutral: #f4f2f2;
   --clr-dark: #1c1e23;
+  --clr-mid-dark: #66686c;
+  --clr-neutral-dark: #d7d3d3;
   --clr-accent--dark: #311c96;
   --clr-btn-red: #ff5858;
   --clr-btn-red-dark: #b11919;
@@ -16,6 +18,9 @@
   --clr-btn-edit-dark: #e4ce0a;
   --clr-btn-brand-dark: #519eeb;
   --clr-accent--bright-dark: #934bd2;
+  --clr-not-started: #d7d3d3;
+  --clr-progress: #ffea00;
+  --clr-complete: #12942c;
   --ff-primary: 'Poppins', sans-serif;
   --ff-secondary: 'Fredoka', sans-serif;
 }
@@ -97,6 +102,30 @@ h6 {
   color: var(--clr-accent--warm);
 }
 
+.bg-not-started {
+  background-color: var(--clr-not-started);
+}
+
+.bg-progress {
+  background: var(--clr-progress);
+}
+
+.bg-complete {
+  background-color: var(--clr-complete);
+}
+
+.bg-dark {
+  background-color: var(--clr-dark);
+}
+
+.bg-mid-dark {
+  background-color: var(--clr-mid-dark);
+}
+
+.bg-neutral-dark {
+  background-color: var(--clr-neutral-dark);
+}
+
 /* ------------------------------- BUTTONS */
 
 .link-btn {
@@ -140,6 +169,33 @@ h6 {
   color: #ffffff;
 }
 
+.btn-progress-outline {
+  background-color: white;
+  color: var(--clr-dark);
+  border: 2px solid var(--clr-progress);
+}
+
+.btn-progress-outline:focus,
+.btn-progress-outline:active,
+.btn-progress-outline:hover {
+  background-color: var(--clr-progress);
+  color: var(--clr-dark);
+}
+
+.btn-complete-outline {
+  background-color: white;
+  color: var(--clr-dark);
+  border: 2px solid var(--clr-complete);
+}
+
+.btn-complete-outline:focus,
+.btn-complete-outline:active,
+.btn-complete-outline:hover {
+  background-color: var(--clr-complete);
+  color: white;
+}
+
+
 .btn-brand {
   background-color: var(--clr-brand);
   color: white;
@@ -173,9 +229,13 @@ h6 {
 .badge-bright {
   background-color: var(--clr-accent--bright);
   color: white;
+}
+
+.badge {
   font-size: 0.7em;
   font-weight: normal;
   font-family: var(--ff-primary);
+  line-height: inherit;
 }
 
 /* ----------------------------------- Cards */
@@ -215,6 +275,55 @@ h6 {
   color: var(--clr-btn-red-dark);
   font-size: 0.9em;
 }
+
+/* Tasklist */
+.contributors-container {
+  max-height: 250px;
+  overflow-y: scroll;
+  border-left: 3px solid var(--clr-brand);
+}
+
+.contributors-container ul {
+  list-style-type: none;
+}
+
+.task-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding: 0 3rem;
+  /* Optional: Adds spacing around the pills */
+}
+
+.task-progress::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  /* Align with the center of the pills */
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(to right,
+      transparent,
+      transparent 5px,
+      #ccc 5px,
+      #ccc 10px);
+  z-index: 0;
+}
+
+.task-pill {
+  position: relative;
+  z-index: 1;
+  /* Ensure pills appear above the line */
+  /* Ensure buttons match the style of spans */
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  text-align: center;
+  white-space: nowrap;
+  /* Prevent text wrapping */
+}
+
 
 @media (min-width: 768px) {
   html {
