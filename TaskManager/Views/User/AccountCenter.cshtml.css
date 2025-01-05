@@ -1,0 +1,16 @@
+/* ----------------------------------- Accordion */
+
+.accordion-button:not(.collapsed) {
+    background-color: white;
+}
+
+.acc-username-btn:not(.collapsed),
+.acc-password-btn:not(.collapsed),
+.acc-deactivate-btn:not(.collapsed) {
+    color: var(--clr-accent--bright);
+}
+
+.acc-email-btn:not(.collapsed),
+.acc-image-btn:not(.collapsed) {
+    color: var(--clr-brand);
+}

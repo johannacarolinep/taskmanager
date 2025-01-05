@@ -20,8 +20,8 @@
         </div>
     }
 
-<div class="std-container py-3 py-lg-4">
-<div class="bg-white p-3 card">
+<div class="std-container py-3 py-lg-5">
+<div class="bg-white p-3 p-md-4 p-lg-5 card">
     <div class="accordion" id="accordionPanelsStayOpenExample">
     <section class="accordion-item">
         <h2 class="accordion-header" id="panelsStayOpen-headingOne">
@@ -35,8 +35,8 @@
                 <p>Current username: <span class="fw-bolder">@Model.CurrentUserName</span></p>
                 <label for="newUserName">New Username:</label>
                 <input type="text" asp-for="NewUserName" required id="newUserName"/>
+                <span asp-validation-for="NewUserName"></span>
                 <button type="submit" value="Update Username" class="btn btn-bright">Update Username</button>
-                <span asp-validation-for="NewUserName" class="text-danger"></span>
             </form>
         </div>
         </div>
@@ -97,7 +97,7 @@
                 <label for="imgUpload">Choose a new image:</label>
                 <input type="file" asp-for="ProfileImage" accept="image/*" required id="imgUpload" onchange="previewImage(event)"/>
                 @if (!string.IsNullOrEmpty(Model.CurrentImage)) {
-                    <div class="std-img-container round w-sm-50 w-md-30 mx-auto mb-3">
+                    <div class="std-img-container round w-sm-50 w-md-30 mx-auto mb-3 bg-neutral">
                         <img src="@Model.CurrentImage" alt="Profile Image" id="profileImagePreview" class="round" />
                     </div>
                 }

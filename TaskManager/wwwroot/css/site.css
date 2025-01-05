@@ -196,24 +196,6 @@ h6 {
   width: 100%;
 }
 
-
-/* ----------------------------------- Accordion */
-
-.accordion-button:not(.collapsed) {
-  background-color: white;
-}
-
-.acc-username-btn:not(.collapsed),
-.acc-password-btn:not(.collapsed),
-.acc-deactivate-btn:not(.collapsed) {
-  color: var(--clr-accent--bright);
-}
-
-.acc-email-btn:not(.collapsed),
-.acc-image-btn:not(.collapsed) {
-  color: var(--clr-brand);
-}
-
 /* ----------------------------------- Forms */
 .std-form {
   display: flex;
@@ -227,6 +209,11 @@ h6 {
   font-family: var(--ff-primary);
   margin-bottom: 1em;
   background-color: var(--clr-neutral);
+}
+
+.field-validation-error {
+  color: var(--clr-btn-red-dark);
+  font-size: 0.9em;
 }
 
 @media (min-width: 768px) {
@@ -258,5 +245,10 @@ h6 {
 
   .w-lg-30 {
     width: 30%;
+  }
+
+  .std-form button {
+    width: 250px;
+    align-self: flex-end;
   }
 }
