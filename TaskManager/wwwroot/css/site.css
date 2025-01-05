@@ -15,6 +15,7 @@
   --clr-btn-edit: #ffea00;
   --clr-btn-edit-dark: #e4ce0a;
   --clr-btn-brand-dark: #519eeb;
+  --clr-accent--bright-dark: #934bd2;
   --ff-primary: 'Poppins', sans-serif;
   --ff-secondary: 'Fredoka', sans-serif;
 }
@@ -63,6 +64,9 @@ h6 {
   width: 40px;
 }
 
+.w-sm-50 {
+  width: 50%;
+}
 
 /* -------------------------------- COLOURS */
 .bg-neutral {
@@ -148,6 +152,18 @@ h6 {
   color: #ffffff;
 }
 
+.btn-bright {
+  background-color: var(--clr-accent--bright);
+  color: white;
+}
+
+.btn-bright:focus,
+.btn-bright:active,
+.btn-bright:hover {
+  background-color: var(--clr-accent--bright-dark);
+  color: #ffffff;
+}
+
 .std-link {
   text-decoration: none;
   color: var(--clr-dark);
@@ -168,13 +184,28 @@ h6 {
   border: 0.5px solid #ededed;
 }
 
+/* ----------------------------------- Images */
+
+.std-img-container {
+  display: flex;
+}
+
+.std-img-container img {
+  display: flex;
+  object-fit: cover;
+  width: 100%;
+}
+
+
 /* ----------------------------------- Accordion */
 
 .accordion-button:not(.collapsed) {
   background-color: white;
 }
 
-.acc-username-btn:not(.collapsed) {
+.acc-username-btn:not(.collapsed),
+.acc-password-btn:not(.collapsed),
+.acc-deactivate-btn:not(.collapsed) {
   color: var(--clr-accent--bright);
 }
 
@@ -183,9 +214,19 @@ h6 {
   color: var(--clr-brand);
 }
 
-.acc-password-btn:not(.collapsed),
-.acc-deactivate-btn:not(.collapsed) {
-  color: var(--clr-accent--warm);
+/* ----------------------------------- Forms */
+.std-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.std-form input {
+  border: none;
+  border-bottom: 1px solid var(--clr-dark);
+  padding: 5px;
+  font-family: var(--ff-primary);
+  margin-bottom: 1em;
+  background-color: var(--clr-neutral);
 }
 
 @media (min-width: 768px) {
@@ -196,6 +237,10 @@ h6 {
   .std-container {
     width: 85%;
     margin: 0 auto;
+  }
+
+  .w-md-30 {
+    width: 30%;
   }
 }
 
@@ -209,5 +254,9 @@ h6 {
 
   .fs-lg-smaller {
     font-size: 0.8em;
+  }
+
+  .w-lg-30 {
+    width: 30%;
   }
 }

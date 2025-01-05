@@ -31,10 +31,11 @@
         </h2>
         <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
         <div class="accordion-body">
-            <form asp-action="UpdateUsername std-form" method="post">
-                <p>Current username: @Model.CurrentUserName</p>
-                <input type="text" asp-for="NewUserName" placeholder="New Username" required />
-                <input type="submit" value="Update Username" class="btn btn-brand" />
+            <form asp-action="UpdateUsername" method="post" class="std-form">
+                <p>Current username: <span class="fw-bolder">@Model.CurrentUserName</span></p>
+                <label for="newUserName">New Username:</label>
+                <input type="text" asp-for="NewUserName" required id="newUserName"/>
+                <button type="submit" value="Update Username" class="btn btn-bright">Update Username</button>
                 <span asp-validation-for="NewUserName" class="text-danger"></span>
             </form>
         </div>
@@ -48,11 +49,12 @@
         </h2>
         <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
         <div class="accordion-body">
-            <form asp-action="UpdateEmail" method="post">
-                <p>Current email: @Model.CurrentEmail</p>
-                <input type="email" asp-for="NewEmail" placeholder="New Email" required />
+            <form asp-action="UpdateEmail" method="post" class="std-form">
+                <p>Current email: <span class="fw-bolder">@Model.CurrentEmail</span></p>
+                <label for="newEmail">New Username:</label>
+                <input type="email" asp-for="NewEmail" required id="newEmail"/>
                 
-                <input type="submit" value="Update Email" />
+                <button type="submit" value="Update Email" class="btn btn-brand">Update Email</button>
                 <span asp-validation-for="NewEmail" class="text-danger"></span>
             </form>            
         </div>
@@ -66,14 +68,19 @@
         </h2>
         <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
         <div class="accordion-body">
-            <form asp-action="UpdatePassword" method="post">
-                <input type="password" asp-for="CurrentPassword" placeholder="Current Password" required />
+            <form asp-action="UpdatePassword" method="post" class="std-form">
+                <label for="currentPassword">Current password:</label>
+                <input type="password" asp-for="CurrentPassword" required id="currentPassword"/>
                 <span asp-validation-for="CurrentPassword" class="text-danger"></span>
-                <input type="password" asp-for="NewPassword" placeholder="New Password" required />
+
+                <label for="newPassword">New password:</label>
+                <input type="password" asp-for="NewPassword" required id="newPassword" />
                 <span asp-validation-for="NewPassword" class="text-danger"></span>
-                <input type="password" asp-for="ConfirmNewPassword" placeholder="Confirm New Password" required />
+
+                <label for="newPasswordRepeat">Confirm new password:</label>
+                <input type="password" asp-for="ConfirmNewPassword" id="newPasswordRepeat" required />
                 <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
-                <input type="submit" value="Update Password" />
+                <button type="submit" value="Update Password" class="btn btn-bright">Update password</button>
             </form>
         </div>
         </div>
@@ -86,18 +93,16 @@
         </h2>
         <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingFour">
         <div class="accordion-body">
-            <form asp-action="UpdateProfileImage" method="post" enctype="multipart/form-data">
-                <input type="file" asp-for="ProfileImage" accept="image/*" required />
-                <input type="submit" value="Upload Image" />
+            <form asp-action="UpdateProfileImage" method="post" enctype="multipart/form-data" class="std-form">
+                <label for="imgUpload">Choose a new image:</label>
+                <input type="file" asp-for="ProfileImage" accept="image/*" required id="imgUpload" onchange="previewImage(event)"/>
+                @if (!string.IsNullOrEmpty(Model.CurrentImage)) {
+                    <div class="std-img-container round w-sm-50 w-md-30 mx-auto mb-3">
+                        <img src="@Model.CurrentImage" alt="Profile Image" id="profileImagePreview" class="round" />
+                    </div>
+                }
+                <button type="submit" value="Upload Image" class="btn btn-brand">Upload image</button>
             </form>
-
-
-            @if (!string.IsNullOrEmpty(Model.CurrentImage))
-            {
-                <div>
-                    <img src="@Model.CurrentImage" alt="Profile Image" style="max-width: 150px; max-height: 150px;" />
-                </div>
-            }
         </div>
         </div>
     </section>
@@ -109,7 +114,9 @@
         </h2>
         <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingFive">
         <div class="accordion-body">
-            <a asp-action="DeactivateAccount">Deactivate your account.</a>
+            <div class="std-form">
+            <a asp-action="DeactivateAccount" class="link-btn btn-bright">Deactivate your account</a>
+            </div>
         </div>
         </div>
     </section>
