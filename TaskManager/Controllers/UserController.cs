@@ -281,7 +281,8 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
             return View("AccountCenter", new AccountCenterViewModel
             {
                 CurrentUserName = originalUserName,
-                CurrentEmail = user.Email
+                CurrentEmail = user.Email,
+                CurrentImage = user.Image
             });
         }
 
@@ -323,7 +324,8 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
             return View("AccountCenter", new AccountCenterViewModel
             {
                 CurrentUserName = user.UserName,
-                CurrentEmail = originalEmail
+                CurrentEmail = originalEmail,
+                CurrentImage = user.Image
             });
         }
 
@@ -382,7 +384,8 @@ public async Task<IActionResult> ReactivateAccount(ReactivateAccountViewModel mo
             }
 
             model.CurrentUserName = user.UserName;
-            model.CurrentEmail = user.Email;            
+            model.CurrentEmail = user.Email;
+            model.CurrentImage = user.Image;            
 
             return View("AccountCenter", model);
         }

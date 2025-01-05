@@ -101,6 +101,7 @@
                         <img src="@Model.CurrentImage" alt="Profile Image" id="profileImagePreview" class="round" />
                     </div>
                 }
+                <span asp-validation-for="ProfileImage" class="text-danger"></span>
                 <button type="submit" value="Upload Image" class="btn btn-brand">Upload image</button>
             </form>
         </div>
