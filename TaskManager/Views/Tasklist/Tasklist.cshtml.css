@@ -1,0 +1,131 @@
+/* Tasklist */
+.contributors-container {
+    max-height: 250px;
+    overflow-y: scroll;
+    border-left: 3px solid var(--clr-brand);
+}
+
+.contributors-container ul {
+    list-style-type: none;
+}
+
+.filter-container {
+    border-top: 3px solid var(--clr-brand);
+}
+
+.search-container {
+    border-bottom: 3px solid var(--clr-brand) !important;
+}
+
+.sorting-container {
+    border-top: 3px solid var(--clr-brand);
+}
+
+.search-input {
+    border: 2px solid var(--clr-neutral-dark);
+    padding: 0.5rem;
+    border-radius: 6px;
+}
+
+.filter-check,
+.filter-check input {
+    font-size: 1.1rem;
+    flex-wrap: nowrap;
+}
+
+/* --------------------------- Task progress indicator */
+
+.task-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 0 0.5rem;
+    /* Optional: Adds spacing around the pills */
+}
+
+.task-progress::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    /* Align with the center of the pills */
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: repeating-linear-gradient(to right,
+            transparent,
+            transparent 5px,
+            #ccc 5px,
+            #ccc 10px);
+    z-index: 0;
+}
+
+.task-pill {
+    position: relative;
+    z-index: 1;
+    /* Ensure pills appear above the line */
+    /* Ensure buttons match the style of spans */
+    /* padding: 0.3rem 0.8rem; */
+    border-radius: 25px;
+    text-align: center;
+    white-space: nowrap;
+    /* Prevent text wrapping */
+    font-size: 0.8rem;
+}
+
+
+.task-descr {
+    font-size: 1.1rem;
+}
+
+.task-p {
+    font-size: 0.9rem;
+}
+
+@media (min-width: 450px) {
+    .task-progress {
+        padding: 0 1rem;
+        /* Optional: Adds spacing around the pills */
+    }
+
+    .task-pill {
+        font-size: 0.9rem;
+    }
+}
+
+@media (min-width: 525px) {
+    .task-progress {
+        padding: 0 2rem;
+        /* Optional: Adds spacing around the pills */
+    }
+
+    .task-pill {
+        font-size: 0.9rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .filter-container {
+        border-top: none;
+        border-left: 3px solid var(--clr-brand);
+    }
+
+    .task-progress::before {
+        height: 3px;
+    }
+
+    .task-pill {
+        font-size: 1rem;
+    }
+
+
+    .task-descr {
+        font-size: 1.2rem;
+    }
+
+    .task-p {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 998px) {}

@@ -60,6 +60,10 @@ h6 {
   margin: 0 auto;
 }
 
+.txt-smaller {
+  font-size: 0.9em;
+}
+
 /* -------------------------------- SHAPES AND SIZES */
 
 .round {
@@ -286,74 +290,6 @@ h6 {
   font-size: 0.9em;
 }
 
-/* Tasklist */
-.contributors-container {
-  max-height: 250px;
-  overflow-y: scroll;
-  border-left: 3px solid var(--clr-brand);
-}
-
-.contributors-container ul {
-  list-style-type: none;
-}
-
-.task-progress {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  padding: 0 3rem;
-  /* Optional: Adds spacing around the pills */
-}
-
-.task-progress::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  /* Align with the center of the pills */
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: repeating-linear-gradient(to right,
-      transparent,
-      transparent 5px,
-      #ccc 5px,
-      #ccc 10px);
-  z-index: 0;
-}
-
-.task-pill {
-  position: relative;
-  z-index: 1;
-  /* Ensure pills appear above the line */
-  /* Ensure buttons match the style of spans */
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  text-align: center;
-  white-space: nowrap;
-  /* Prevent text wrapping */
-}
-
-.filter-container {
-  border-top: 3px solid var(--clr-brand);
-}
-
-.search-container {
-  border-bottom: 3px solid var(--clr-brand);
-}
-
-.search-input {
-  border: 2px solid var(--clr-neutral-dark);
-  padding: 0.5rem;
-  border-radius: 6px;
-}
-
-.filter-check,
-.filter-check input {
-  font-size: 1.1rem;
-  flex-wrap: nowrap;
-}
-
 
 @media (min-width: 768px) {
   html {
@@ -373,16 +309,12 @@ h6 {
   .card-md {
     border: 0.5px solid #ededed;
   }
-
-  .filter-container {
-    border-top: none;
-    border-left: 3px solid var(--clr-brand);
-  }
 }
 
 @media (min-width: 998px) {
 
-  .std-container {
+  .std-container,
+  .std-container-md {
     width: 80%;
     max-width: 1100px;
     margin: 0 auto;

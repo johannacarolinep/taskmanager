@@ -84,7 +84,7 @@
                     <button type="submit" class="btn btn-brand"><i class="fa-solid fa-search"></i></button>
                 </form>
                 <!-- Sorting Links -->
-                <div class="d-flex flex-wrap gap-2 pt-3 mb-3 mb-md-0">
+                <div class="d-flex flex-wrap gap-2 pt-3 mb-3 mb-md-0 sorting-container">
                     <a asp-action="Tasklist" asp-route-listId="@Model.TasklistId" asp-route-sortOrder="description" 
                         asp-route-searchString="@ViewBag.SearchString"
                         asp-route-selectedPriority="@(ViewBag.SelectedPriority != null ? string.Join(",", ViewBag.SelectedPriority) : "")"
@@ -143,23 +143,23 @@
         </div>
 
 
-        <div class="card bg-neutral p-3">
+        <div class="card bg-neutral p-2 p-md-3">
         @if (Model.Tasks.Count == 0) {
             <p>No tasks available for this tasklist.</p>
         }   else {
             foreach (var task in Model.Tasks) {
-                <div class="card p-3 mb-3 @GetStatusClass(task.Status)">
-                    <div class="row">
-                        <div class="col-8">
+                <div class="card mb-3 pb-2 pb-md-3 @GetStatusClass(task.Status)">
+                    <div class="row px-2 px-md-3 pt-2 pt-md-3">
+                        <div class="col-10 col-md-9">
                             <div class="d-flex">
-                                <h4>
+                                <h4 class="task-descr">
                                     @task.Description
                                     @if (task.Status == TaskManager.Models.TaskStatus.NotStarted) {
-                                    <span class="badge rounded-pill bg-not-started text-dark">Not Started</span>
+                                    <span class="txt-smaller badge rounded-pill bg-not-started text-dark">Not Started</span>
                                     } else if (task.Status == TaskManager.Models.TaskStatus.InProgress) {
-                                        <span class="badge rounded-pill bg-progress text-dark">In Progress</span>
+                                        <span class="txt-smaller badge rounded-pill bg-progress text-dark">In Progress</span>
                                     } else if (task.Status == TaskManager.Models.TaskStatus.Done) {
-                                        <span class="badge rounded-pill bg-complete">Complete</span>
+                                        <span class="txt-smaller badge rounded-pill bg-complete">Complete</span>
                                     }
                                     @if (task.Priority == 1) {
                                     <span class="badge rounded-pill badge bg-dark text-white">Prio @task.Priority</span>
@@ -170,16 +170,19 @@
                                     }
                                 </h4>
                             </div>
-                            <p><span class="fw-bolder">Due:</span> @task.Deadline.ToString("g")</p>
-                            <p><span class="fw-bolder">Created:</span> @task.CreatedAt.ToString("g")</p>
+                            <p class="task-p mb-2"><span class="fw-bolder">Due:</span> @task.Deadline.ToString("g")</p>
+                            <p class="task-p"><span class="fw-bolder">Created:</span> @task.CreatedAt.ToString("g")</p>
                         </div>
-                        <div class="col-4 d-flex justify-content-end align-items-start">
-                            @if (Model.UserRole == "Owner" || Model.UserRole == "Admin") {
-                                <a asp-controller="Task" asp-action="Edit" asp-route-TaskId="@task.Id" class="btn link-btn btn-edit p-2 px-4 me-2" data-bs-toggle="tooltip" data-bs-title="Edit task"><i class="fa-solid fa-pen-to-square"></i></a>
-                                <a asp-controller="Task" asp-action="Delete" asp-route-TaskId="@task.Id" class="btn link-btn btn-red p-2 px-4" data-bs-toggle="tooltip" data-bs-title="Delete task"><i class="fa-solid fa-trash"></i></a>
-                            }
-                        </div>
+                        <div class="col-2 col-md-3 d-flex align-items-start justify-content-end">
+                            <div class="d-flex flex-wrap gap-1 gap-md-2 justify-content-end">
+                                @if (Model.UserRole == "Owner" || Model.UserRole == "Admin") {
+                                    <a asp-controller="Task" asp-action="Edit" asp-route-TaskId="@task.Id" class="btn link-btn btn-edit p-2 px-md-3" data-bs-toggle="tooltip" data-bs-title="Edit task"><i class="fa-solid fa-pen-to-square"></i></a>
+                                    <a asp-controller="Task" asp-action="Delete" asp-route-TaskId="@task.Id" class="btn link-btn btn-red p-2 px-md-3" data-bs-toggle="tooltip" data-bs-title="Delete task"><i class="fa-solid fa-trash"></i></a>
+                                }
+                            </div>
 
+                        </div>
+                    </div>
                         <div class="task-progress">
                             <span class="task-pill rounded-pill bg-not-started p-2">Not started</span>
                             @if (task.Status == TaskManager.Models.TaskStatus.NotStarted) {
@@ -199,7 +202,7 @@
                                 <span class="task-pill rounded-pill bg-complete text-white p-2">Complete</span>
                             }
                         </div>
-                    </div>
+                    
                 </div>
             }
         }
