@@ -1,46 +1,49 @@
 @model TaskManager.Models.TaskModel
 
-<h2>Edit Task</h2>
+<div class="d-flex flex-grow-1 justify-content-center align-items-center">
+    <section class="std-container card bg-white p-3 p-lg-4 my-3">
+        <h1 class="clr-accent-bright">Edit Task <i class="fa-regular fa-note-sticky"></i></h1>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="ListId" />
+        <form asp-action="Edit" method="post" class="std-form">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ListId" />
 
-    <div>
-        <label asp-for="Description"></label>
-        <input asp-for="Description" />
-        <span asp-validation-for="Description"></span>
-    </div>
 
-    <div>
-        <label asp-for="Priority"></label>
-        <select asp-for="Priority">
-            <option value="1" selected="@(Model.Priority == 1)">1 - High</option>
-            <option value="2" selected="@(Model.Priority == 2)">2 - Medium</option>
-            <option value="3" selected="@(Model.Priority == 3)">3 - Low</option>
-        </select>
-        <span asp-validation-for="Priority"></span>
-    </div>
+                <label asp-for="Description"></label>
+                <input asp-for="Description" />
+                <span asp-validation-for="Description"></span>
 
-    <div>
-        <label asp-for="Status"></label>
-        <select asp-for="Status">
-            <option value="NotStarted" selected="@(Model.Status == TaskManager.Models.TaskStatus.NotStarted)">Not started</option>
-            <option value="InProgress" selected="@(Model.Status == TaskManager.Models.TaskStatus.InProgress)">In progress</option>
-            <option value="Done" selected="@(Model.Status == TaskManager.Models.TaskStatus.Done)">Done</option>
-        </select>
-        <span asp-validation-for="Status"></span>
-    </div>
 
-    <div>
-        <label asp-for="Deadline"></label>
-        <input asp-for="Deadline" type="datetime-local" />
-        <span asp-validation-for="Deadline"></span>
-    </div>
+                <label asp-for="Priority"></label>
+                <select asp-for="Priority">
+                    <option value="1" selected="@(Model.Priority == 1)">1 - High</option>
+                    <option value="2" selected="@(Model.Priority == 2)">2 - Medium</option>
+                    <option value="3" selected="@(Model.Priority == 3)">3 - Low</option>
+                </select>
+                <span asp-validation-for="Priority"></span>
 
-    <div>
-        <input type="submit" value="Save Changes" />
-    </div>
 
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-</form>
+
+                <label asp-for="Status"></label>
+                <select asp-for="Status">
+                    <option value="NotStarted" selected="@(Model.Status == TaskManager.Models.TaskStatus.NotStarted)">Not started</option>
+                    <option value="InProgress" selected="@(Model.Status == TaskManager.Models.TaskStatus.InProgress)">In progress</option>
+                    <option value="Done" selected="@(Model.Status == TaskManager.Models.TaskStatus.Done)">Done</option>
+                </select>
+                <span asp-validation-for="Status"></span>
+
+
+
+                <label asp-for="Deadline"></label>
+                <input asp-for="Deadline" type="datetime-local" />
+                <span asp-validation-for="Deadline"></span>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-controller="Tasklist" asp-action="Tasklist" asp-route-listId="@Model.ListId" class="btn link-btn shadow-light">Cancel</a>
+                <button type="submit" class="btn btn-bright shadow-light">Save Changes!</button>
+            </div>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </form>
+
+    </section>
+</div>

@@ -4,27 +4,34 @@
     ViewData["Title"] = "Leave Tasklist";
 }
 
-<h2>Leave Tasklist</h2>
+<div class="d-flex flex-grow-1 justify-content-center align-items-center">
+    <section class="std-container card bg-white p-3 p-lg-4 my-3">
+        <h1 class="clr-accent-warm">Leave Tasklist <i class="fa-solid fa-person-walking-arrow-right"></i></h1>
 
-<p>Are you sure you want to leave this tasklist?</p>
+        <p>Are you sure you want to leave this tasklist?</p>
 
-<div>
-    <strong>Title:</strong> @Model.Title
+        <div>
+            <strong>Title:</strong> @Model.Title
+        </div>
+        <div>
+            <strong>Description:</strong> @Model.Description
+        </div>
+        <div>
+            <strong>Created At:</strong> @Model.CreatedAt.ToString("g")
+        </div>
+
+        <form asp-controller="ListUser" asp-action="LeaveList" method="post" class="std-form">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Title" />
+            <input type="hidden" asp-for="Description" />
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-controller="Tasklist" asp-action="Tasklists" class="btn link-btn shadow-light">Cancel</a>
+                <button type="submit" class="btn btn-red shadow-light">Yes, leave tasklist</button>
+            </div>
+
+        </form>
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+    </section>
 </div>
-<div>
-    <strong>Description:</strong> @Model.Description
-</div>
-<div>
-    <strong>Created At:</strong> @Model.CreatedAt.ToString("g")
-</div>
-
-<form asp-controller="ListUser" asp-action="LeaveList" method="post">
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="Title" />
-    <input type="hidden" asp-for="Description" />
-    <button type="submit" class="btn btn-danger">Yes, leave tasklist</button>
-    <a asp-controller="Tasklist" asp-action="Tasklists" class="btn btn-secondary">Cancel</a>
-</form>
-
-<div asp-validation-summary="All" class="text-danger"></div>
-

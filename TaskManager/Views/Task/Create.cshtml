@@ -6,35 +6,43 @@
     int listId = ViewBag.listId;
 }
 
-<h2>Create New Task</h2>
+<div class="d-flex flex-grow-1 justify-content-center align-items-center">
+    <section class="std-container card bg-white p-3 p-lg-4 my-3">
+        <h1 class="clr-primary">Create new task <i class="fa-regular fa-note-sticky"></i></h1>
+        <form asp-action="Create" method="post" class="std-form">
+            <!-- Hidden field to pass the ListId -->
+            <input type="hidden" asp-for="ListId" value="@listId" />
 
-<form asp-action="Create" method="post">
-    <!-- Hidden field to pass the ListId -->
-    <input type="hidden" asp-for="ListId" value="@listId" />
 
-    <div>
-        <label asp-for="Description">Description</label>
-        <input asp-for="Description" />
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
+                <label asp-for="Description">Description</label>
+                <input asp-for="Description" />
+                <span asp-validation-for="Description" class="text-danger"></span>
 
-    <div>
-        <label asp-for="Priority">Priority</label>
-        <select asp-for="Priority">
-            <option value="1">1 - High</option>
-            <option value="2">2 - Medium</option>
-            <option value="3">3 - Low</option>
-        </select>
-        <span asp-validation-for="Priority" class="text-danger"></span>
-    </div>
 
-    <div>
-        <label asp-for="Deadline">Deadline</label>
-        <input asp-for="Deadline" type="datetime-local" />
-        <span asp-validation-for="Deadline" class="text-danger"></span>
-    </div>
 
-    <button type="submit">Create Task</button>
+                <label asp-for="Priority">Priority</label>
+                <select asp-for="Priority">
+                    <option value="1">1 - High</option>
+                    <option value="2">2 - Medium</option>
+                    <option value="3">3 - Low</option>
+                </select>
+                <span asp-validation-for="Priority" class="text-danger"></span>
 
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-</form>
+
+
+                <label asp-for="Deadline">Deadline</label>
+                <input asp-for="Deadline" type="datetime-local" />
+                <span asp-validation-for="Deadline" class="text-danger"></span>
+ 
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-controller="Tasklist" asp-action="Tasklist" asp-route-listId="@listId" class="btn link-btn shadow-light">Cancel</a>
+                <button type="submit" class="btn btn-brand shadow-light">Save!</button>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </form>
+
+    </section>
+</div>
+
