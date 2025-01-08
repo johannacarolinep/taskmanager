@@ -75,7 +75,7 @@
             <div class="row mx-0">
             <div class="col-md-6 px-0 pe-md-3 d-flex flex-column">
                 <!-- Search Form -->
-                <form class="search-container pb-3 d-flex" asp-action="Tasklist" method="get" asp-route-listId="@Model.TasklistId">
+                <form class="pb-3 d-flex" asp-action="Tasklist" method="get" asp-route-listId="@Model.TasklistId">
                     <input type="hidden" name="listId" value="@Model.TasklistId" />
                     <input type="hidden" name="sortOrder" value="@ViewBag.SortOrder" />
                     <input type="hidden" name="selectedPriority" value="@(ViewBag.SelectedPriority != null ? string.Join(",", ViewBag.SelectedPriority) : "")" />

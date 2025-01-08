@@ -43,7 +43,10 @@ body {
 }
 
 main {
+  height: 100%;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 h1,
@@ -285,7 +288,8 @@ h6 {
   flex-direction: column;
 }
 
-.std-form input {
+.std-form input,
+.std-form textarea {
   border: none;
   border-bottom: 1px solid var(--clr-dark);
   padding: 5px;

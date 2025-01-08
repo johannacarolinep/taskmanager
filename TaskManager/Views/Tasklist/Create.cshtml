@@ -4,25 +4,32 @@
     ViewData["Title"] = "Create tasklist";
 }
 
-<h1>Create tasklist</h1>
+<div class="d-flex flex-grow-1 justify-content-center align-items-center">
+    <section class="std-container card bg-white p-3 p-lg-4 my-3">
+        <h1 class="clr-primary">Create tasklist <i class="fa-solid fa-clipboard-list"></i></h1>
 
-<form asp-action="Create">
-    <div class="form-group">
-        <label asp-for="Title">List Title:</label>
-        <input type="text" asp-for="Title" class="form-control" />
-        <!-- Display validation message for the Title field -->
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+        <form asp-action="Create" class="std-form">
+            <div class="form-group">
+                <label asp-for="Title">List Title:*</label>
+                <input type="text" asp-for="Title" class="form-control" />
+                <!-- Display validation message for the Title field -->
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
 
-    <div class="form-group">
-        <label asp-for="Description">Description:</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <!-- Display validation message for the Description field -->
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
+            <div class="form-group">
+                <label asp-for="Description">Description:</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <!-- Display validation message for the Description field -->
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
 
-    <br/>
-    <input type="submit" value="Create tasklist" class="btn btn-primary"/>
+            <br/>
+            <button type="submit" value="Create tasklist" class="btn btn-brand shadow-light">Create tasklist!</button>
 
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-</form>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </form>
+    </section>
+</div>
+
+
+
