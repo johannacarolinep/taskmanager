@@ -289,7 +289,8 @@ h6 {
 }
 
 .std-form input,
-.std-form textarea {
+.std-form textarea,
+.std-form select {
   border: none;
   border-bottom: 1px solid var(--clr-dark);
   padding: 5px;
@@ -301,6 +302,13 @@ h6 {
 .field-validation-error {
   color: var(--clr-btn-red-dark);
   font-size: 0.9em;
+}
+
+.role-tbl td,
+.role-tbl select {
+  font-size: 0.9rem;
+  padding: 5px;
+  margin-bottom: 0;
 }
 
 
@@ -322,6 +330,13 @@ h6 {
   .card-md {
     border: 0.5px solid #ededed;
   }
+
+  .role-tbl td,
+  .role-tbl select {
+    font-size: 1rem;
+    padding: 8px;
+  }
+
 }
 
 @media (min-width: 998px) {

@@ -4,26 +4,34 @@
     ViewData["Title"] = "Edit Tasklist";
 }
 
-<h2>Edit Tasklist</h2>
 
-<form asp-action="EditList" method="post">
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="IsActive" />
+<div class="d-flex flex-grow-1 justify-content-center align-items-center">
+    <section class="std-container card bg-white shadow-dark p-3 p-lg-4 my-3">
+        <h1 class="clr-accent-bright">Edit tasklist <i class="fa-solid fa-clipboard-list"></i></h1>
 
-    <div class="form-group">
-        <label asp-for="Title"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+        <form asp-action="EditList" method="post" class="std-form">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="IsActive" />
 
-    <div class="form-group">
-        <label asp-for="Description"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
+            <div class="form-group">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
 
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-    <a asp-action="Tasklists" class="btn btn-secondary">Cancel</a>
-</form>
+            <div class="form-group">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
 
-<div asp-validation-summary="All" class="text-danger"></div>
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Tasklists" class="btn link-btn shadow-light">Cancel</a>
+                <button type="submit" class="btn btn-bright shadow-light">Save Changes</button>
+            </div>
+
+        </form>
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+    </section>
+</div>
