@@ -143,6 +143,7 @@
         </div>
 
 
+<!-- List of tasks -->
         <div class="card bg-neutral p-2 p-md-3">
         @if (Model.Tasks.Count == 0) {
             <p>No tasks available for this tasklist.</p>
@@ -152,15 +153,16 @@
                     <div class="row px-2 px-md-3 pt-2 pt-md-3">
                         <div class="col-10 col-md-9">
                             <div class="d-flex">
-                                <h4 class="task-descr">
+                                <h4 class="task-descr pb-1">
+                                    <span class="status-circle"><i class="fa-solid fa-circle"></i></span>
                                     @task.Description
-                                    @if (task.Status == TaskManager.Models.TaskStatus.NotStarted) {
+                                    @* @if (task.Status == TaskManager.Models.TaskStatus.NotStarted) {
                                     <span class="txt-smaller badge rounded-pill bg-not-started text-dark">Not Started</span>
                                     } else if (task.Status == TaskManager.Models.TaskStatus.InProgress) {
                                         <span class="txt-smaller badge rounded-pill bg-progress text-dark">In Progress</span>
                                     } else if (task.Status == TaskManager.Models.TaskStatus.Done) {
                                         <span class="txt-smaller badge rounded-pill bg-complete">Complete</span>
-                                    }
+                                    } *@
                                     @if (task.Priority == 1) {
                                     <span class="badge rounded-pill badge bg-dark text-white">Prio @task.Priority</span>
                                     } else if (task.Priority == 2) {
@@ -217,9 +219,9 @@
     {
         return status switch
         {
-            TaskManager.Models.TaskStatus.NotStarted => "",
-            TaskManager.Models.TaskStatus.InProgress => "bg-progress-light",
-            TaskManager.Models.TaskStatus.Done => "bg-complete-light",
+            TaskManager.Models.TaskStatus.NotStarted => "task-not-started",
+            TaskManager.Models.TaskStatus.InProgress => "task-in-progress",
+            TaskManager.Models.TaskStatus.Done => "task-done",
             _ => "" // Default class (if needed)
         };
     }

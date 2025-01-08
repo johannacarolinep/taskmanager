@@ -73,13 +73,54 @@
     font-size: 0.8rem;
 }
 
-
 .task-descr {
     font-size: 1.1rem;
 }
 
 .task-p {
     font-size: 0.9rem;
+}
+
+/* .task-done h4 {
+    border-bottom: 3px solid var(--clr-complete);
+} */
+
+.task-done .task-progress::before {
+
+    background: repeating-linear-gradient(to right,
+            transparent,
+            transparent 5px,
+            var(--clr-complete) 5px,
+            var(--clr-complete) 10px);
+}
+
+.task-done .status-circle {
+    color: var(--clr-complete);
+}
+
+/* .task-in-progress h4 {
+    border-bottom: 3px solid var(--clr-progress);
+} */
+
+.task-in-progress .task-progress::before {
+
+    background: repeating-linear-gradient(to right,
+            transparent,
+            transparent 5px,
+            var(--clr-progress) 5px,
+            var(--clr-progress) 10px);
+}
+
+.task-in-progress .status-circle {
+    color: var(--clr-progress);
+}
+
+/* .task-not-started h4 {
+    border-bottom: 3px solid var(--clr-neutral-dark);
+} */
+
+.task-not-started .status-circle {
+    color: var(--clr-neutral-dark);
 }
 
 @media (min-width: 450px) {
