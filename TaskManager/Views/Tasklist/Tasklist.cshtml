@@ -31,11 +31,11 @@
             <h2>Contributors</h2>
             <div>
             @if (@Model.UserRole == "Owner" || @Model.UserRole == "Admin") {
-                <a asp-controller="ListUser" asp-action="Invite" asp-route-listId="@Model.TasklistId" asp-route-listTitle="@Model.Title" asp-route-username="@User.Identity.Name" class="btn link-btn btn-brand mb-2">Invite <i class="fa-regular fa-envelope ms-2"></i></a>
-                <a asp-controller="ListUser" asp-action="UpdateRoles" asp-route-listId="@Model.TasklistId" asp-route-listTitle="@Model.Title" class="btn link-btn btn-bright mb-2">Update roles <i class="fa-solid fa-unlock-keyhole ms-2"></i></a>
+                <a asp-controller="ListUser" asp-action="Invite" asp-route-listId="@Model.TasklistId" asp-route-listTitle="@Model.Title" asp-route-username="@User.Identity.Name" class="btn link-btn btn-brand mb-2 shadow-dark">Invite <i class="fa-regular fa-envelope ms-2"></i></a>
+                <a asp-controller="ListUser" asp-action="UpdateRoles" asp-route-listId="@Model.TasklistId" asp-route-listTitle="@Model.Title" class="btn link-btn btn-bright mb-2 shadow-dark">Update roles <i class="fa-solid fa-unlock-keyhole ms-2"></i></a>
             }
             @if (@Model.UserRole == "Owner" && Model.Contributors.Count > 1) {
-                <a asp-controller="ListUser" asp-action="TransferOwnership" asp-route-listId="@Model.TasklistId" asp-route-listTitle="@Model.Title" class="btn link-btn btn-red mb-2">Transfer ownership <i class="fa-solid fa-crown ms-2"></i></a>
+                <a asp-controller="ListUser" asp-action="TransferOwnership" asp-route-listId="@Model.TasklistId" asp-route-listTitle="@Model.Title" class="btn link-btn btn-red mb-2 shadow-dark">Transfer ownership <i class="fa-solid fa-crown ms-2"></i></a>
             }
             </div>
             <div class="pt-2 px-2 bg-white contributors-container card flex-grow h-100">
@@ -68,7 +68,7 @@
         <div class="d-flex align-items-center mb-3">
             <h3 class="me-2 mb-0">Tasks</h3>
             @if (Model.UserRole == "Owner" || Model.UserRole == "Admin") {
-                    <a asp-controller="Task" asp-action="Create" asp-route-listId="@Model.TasklistId" class="btn link-btn btn-brand">New Task<i class="fa-solid fa-square-plus ms-2"></i></a>
+                    <a asp-controller="Task" asp-action="Create" asp-route-listId="@Model.TasklistId" class="btn link-btn btn-brand shadow-dark">New Task<i class="fa-solid fa-square-plus ms-2"></i></a>
             }
         </div>
         <div class="card bg-neutral p-3 mb-2">
@@ -81,7 +81,7 @@
                     <input type="hidden" name="selectedPriority" value="@(ViewBag.SelectedPriority != null ? string.Join(",", ViewBag.SelectedPriority) : "")" />
                     <input type="hidden" name="selectedStatus" value="@(ViewBag.SelectedStatus != null ? string.Join(",", ViewBag.SelectedStatus) : "")" />
                     <input class="search-input flex-grow-1 me-2" type="text" name="searchString" value="@ViewBag.SearchString" placeholder="Search by title..." />
-                    <button type="submit" class="btn btn-brand"><i class="fa-solid fa-search"></i></button>
+                    <button type="submit" class="btn btn-brand shadow-dark"><i class="fa-solid fa-search"></i></button>
                 </form>
                 <!-- Sorting Links -->
                 <div class="d-flex flex-wrap gap-2 pt-3 mb-3 mb-md-0 sorting-container">
@@ -89,14 +89,14 @@
                         asp-route-searchString="@ViewBag.SearchString"
                         asp-route-selectedPriority="@(ViewBag.SelectedPriority != null ? string.Join(",", ViewBag.SelectedPriority) : "")"
                         asp-route-selectedStatus="@(ViewBag.SelectedStatus != null ? string.Join(",", ViewBag.SelectedStatus) : "")"
-                        class="btn link-btn btn-bright flex-grow-1">
+                        class="btn link-btn btn-bright flex-grow-1 shadow-dark">
                         <i class="fa-solid fa-sort"></i> Alphabetically
                     </a>
                     <a asp-action="Tasklist" asp-route-listId="@Model.TasklistId" asp-route-sortOrder="deadline" 
                         asp-route-searchString="@ViewBag.SearchString"
                         asp-route-selectedPriority="@(ViewBag.SelectedPriority != null ? string.Join(",", ViewBag.SelectedPriority) : "")"
                         asp-route-selectedStatus="@(ViewBag.SelectedStatus != null ? string.Join(",", ViewBag.SelectedStatus) : "")"
-                        class="btn link-btn btn-bright flex-grow-1">
+                        class="btn link-btn btn-bright flex-grow-1 shadow-dark">
                         <i class="fa-solid fa-sort"></i> Deadline
                     </a>
                 </div>
@@ -135,7 +135,7 @@
                             </label>
                         </div>
                     </div>
-                        <button type="submit" class="btn btn-bright"><i class="fa-solid fa-filter"></i></button>
+                        <button type="submit" class="btn btn-bright shadow-dark"><i class="fa-solid fa-filter"></i></button>
                 </form>
             </div>
             </div>
@@ -149,7 +149,7 @@
             <p>No tasks available for this tasklist.</p>
         }   else {
             foreach (var task in Model.Tasks) {
-                <div class="card mb-3 pb-2 pb-md-3 @GetStatusClass(task.Status)">
+                <div class="card shadow-dark mb-3 pb-2 pb-md-3 @GetStatusClass(task.Status)">
                     <div class="row px-2 px-md-3 pt-2 pt-md-3">
                         <div class="col-10 col-md-9">
                             <div class="d-flex">
@@ -178,8 +178,8 @@
                         <div class="col-2 col-md-3 d-flex align-items-start justify-content-end">
                             <div class="d-flex flex-wrap gap-1 gap-md-2 justify-content-end">
                                 @if (Model.UserRole == "Owner" || Model.UserRole == "Admin") {
-                                    <a asp-controller="Task" asp-action="Edit" asp-route-TaskId="@task.Id" class="btn link-btn btn-edit p-2 px-md-3" data-bs-toggle="tooltip" data-bs-title="Edit task"><i class="fa-solid fa-pen-to-square"></i></a>
-                                    <a asp-controller="Task" asp-action="Delete" asp-route-TaskId="@task.Id" class="btn link-btn btn-red p-2 px-md-3" data-bs-toggle="tooltip" data-bs-title="Delete task"><i class="fa-solid fa-trash"></i></a>
+                                    <a asp-controller="Task" asp-action="Edit" asp-route-TaskId="@task.Id" class="btn link-btn btn-edit p-2 px-md-3 shadow-light" data-bs-toggle="tooltip" data-bs-title="Edit task"><i class="fa-solid fa-pen-to-square"></i></a>
+                                    <a asp-controller="Task" asp-action="Delete" asp-route-TaskId="@task.Id" class="btn link-btn btn-red p-2 px-md-3 shadow-light" data-bs-toggle="tooltip" data-bs-title="Delete task"><i class="fa-solid fa-trash"></i></a>
                                 }
                             </div>
 
@@ -190,7 +190,7 @@
                             @if (task.Status == TaskManager.Models.TaskStatus.NotStarted) {
                                 <form asp-controller="Task" asp-action="Progress" method="post" style="display: inline;">
                                     <input type="hidden" name="taskId" value="@task.Id" />
-                                    <button type="submit" class="task-pill btn btn-progress-outline rounded-pill">In progress</button>
+                                    <button type="submit" class="task-pill btn btn-progress-outline rounded-pill shadow-light">In progress</button>
                                 </form>
                             } else {
                                 <span class="task-pill rounded-pill bg-progress text-dark p-2">In Progress</span>
@@ -198,7 +198,7 @@
                             @if (task.Status == TaskManager.Models.TaskStatus.NotStarted || task.Status == TaskManager.Models.TaskStatus.InProgress) {
                                 <form asp-controller="Task" asp-action="Complete" method="post" style="display: inline;">
                                     <input type="hidden" name="taskId" value="@task.Id" />
-                                    <button type="submit" class="task-pill btn btn-complete-outline rounded-pill">Complete</button>
+                                    <button type="submit" class="task-pill btn btn-complete-outline rounded-pill shadow-light">Complete</button>
                                 </form>
                             } else {
                                 <span class="task-pill rounded-pill bg-complete text-white p-2">Complete</span>

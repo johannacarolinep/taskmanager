@@ -18,7 +18,7 @@
                     <span class="carousel-text clr-accent-warm">Next big thing -></span>
                     <span class="carousel-text clr-accent-bright">Grand plan -></span>
             </h2>
-            <a asp-action="Create" class="link-btn btn-brand">Create New Tasklist!</a>
+            <a asp-action="Create" class="link-btn btn-brand shadow-light">Create New Tasklist!</a>
         </div>
 
         @if (TempData["SuccessMessage"] != null)
@@ -41,8 +41,8 @@
 <h2>Your tasklists</h2>
 <!-- Sorting Links -->
 <div>
-    <a class="btn rounded-pill bg-brand me-1 text-white" asp-action="Tasklists" asp-route-sortOrder="title" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Title</a>
-    <a class="btn rounded-pill bg-brand text-white" asp-action="Tasklists" asp-route-sortOrder="date" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Creation Date</a>
+    <a class="btn rounded-pill bg-brand me-1 text-white shadow-dark" asp-action="Tasklists" asp-route-sortOrder="title" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Title</a>
+    <a class="btn rounded-pill bg-brand text-white shadow-dark" asp-action="Tasklists" asp-route-sortOrder="date" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Creation Date</a>
 </div>
 
 @if (!Model.Any()) {
@@ -50,7 +50,7 @@
 } else {
     @foreach (var tasklist in Model) {
         if (tasklist.IsActive == true) {
-            <div class="card my-3">
+            <div class="card my-3 shadow-dark">
                 <div class="card-body row">
                     <div class="card-text-blk col-md-10">
                         <h3 class="card-title">@tasklist.Title <span class="badge rounded-pill badge-bright">@tasklist.UserRole</span></h3>
@@ -80,14 +80,14 @@
                     </div>
                     <div class="tl-controls col-md-2 d-flex flex-column">
                     @if (tasklist.UserRole == "Owner" || tasklist.UserRole == "Admin") {
-                        <a class="link-btn btn-edit m-1" asp-action="EditList" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Edit tasklist"><i class="fa-regular fa-pen-to-square"></i></a>
+                        <a class="link-btn btn-edit m-1 shadow-light" asp-action="EditList" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Edit tasklist"><i class="fa-regular fa-pen-to-square"></i></a>
                     } 
                     @if (tasklist.UserRole == "Owner") {
-                        <a class="link-btn btn-red m-1" asp-action="Delete" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Delete tasklist"><i class="fa-solid fa-trash"></i></a>
+                        <a class="link-btn btn-red m-1 shadow-light" asp-action="Delete" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Delete tasklist"><i class="fa-solid fa-trash"></i></a>
                     } else {
-                        <a class="link-btn m-1" asp-controller="ListUser" asp-action="LeaveList" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Leave tasklist"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+                        <a class="link-btn m-1 shadow-light" asp-controller="ListUser" asp-action="LeaveList" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Leave tasklist"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
                     }
-                    <a class="link-btn btn-brand m-1" asp-action="Tasklist" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Open tasklist"><i class="fa-regular fa-folder-open"></i></a>
+                    <a class="link-btn btn-brand m-1 shadow-light" asp-action="Tasklist" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Open tasklist"><i class="fa-regular fa-folder-open"></i></a>
                     </div>
                 </div>
             </div>

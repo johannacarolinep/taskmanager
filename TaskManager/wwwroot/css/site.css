@@ -149,7 +149,7 @@ h6 {
   background-color: var(--clr-neutral);
   color: var(--clr-dark);
   border-radius: 6px;
-  box-shadow: 5px 5px 3px #fafafa;
+  /* box-shadow: 5px 5px 3px #fafafa; */
 }
 
 .link-btn:focus,
@@ -237,6 +237,15 @@ h6 {
 .std-link {
   text-decoration: none;
   color: var(--clr-dark);
+}
+
+
+.shadow-dark {
+  box-shadow: 5px 5px 8px #efeded;
+}
+
+.shadow-light {
+  box-shadow: 5px 5px 8px #fafafa;
 }
 
 /* ----------------------------------- Badges */
