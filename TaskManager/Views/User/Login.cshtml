@@ -1,7 +1,5 @@
 @model TaskManager.ViewModels.LoginViewModel
 
-<h2>Login</h2>
-
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success">
@@ -16,26 +14,31 @@
     </div>
 }
 
-<form asp-action="Login" method="post">
-    <div asp-validation-summary="ModelOnly"></div>
+<div class="d-flex flex-grow-1 justify-content-center align-items-center">
+    <section class="std-container card bg-white p-4 p-lg-5 my-3">
+        <h1 class="clr-accent-bright">Log in <i class="fa-solid fa-user-lock"></i></i></h1>
+        <form asp-action="Login" method="post" class="std-form">
+            <div asp-validation-summary="ModelOnly"></div>
 
-    <div>
-        <label asp-for="UserName"></label>
-        <input asp-for="UserName" />
-    </div>
+                <label asp-for="UserName"></label>
+                <input asp-for="UserName" />
 
-    <div>
-        <label asp-for="Password"></label>
-        <input asp-for="Password" type="password" />
-    </div>
 
-    <div>
-        <input asp-for="RememberMe" />
-        <label asp-for="RememberMe"></label>
-    </div>
+                <label asp-for="Password"></label>
+                <input asp-for="Password" type="password" />
 
-    <button type="submit">Login</button>
-</form>
 
-<a asp-action="ReactivateAccount">Reactivate an inactive account.</a>
-<a asp-action="ForgotPassword">Forgot password?</a>
+            <div>
+                <input asp-for="RememberMe" />
+                <label asp-for="RememberMe"></label>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-bright shadow-light">Login</button>
+            </div>
+        </form>
+        <div class="d-flex justify-content-center gap-2 pt-3 pt-lg-4">
+            <a asp-action="ReactivateAccount" class="std-link">Reactivate an inactive account.</a> | 
+            <a asp-action="ForgotPassword" class="std-link">Forgot password?</a>
+        </div>
+    </section>
+</div>

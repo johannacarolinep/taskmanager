@@ -4,36 +4,39 @@
     ViewData["Title"] = "Sign Up";
 }
 
-<h1>Sign up</h1>
+<div class="d-flex flex-grow-1 justify-content-center align-items-center">
+    <section class="std-container card bg-white p-4 p-lg-5 my-3">
+        <h1 class="clr-primary">Create an account <i class="fa-solid fa-user-plus"></i></h1>
+    <div asp-validation-summary="All" class="text-danger"></div>
 
-<div asp-validation-summary="All" class="text-danger"></div>
+    <form asp-action="Signup" class="std-form">
+        <label>Username:</label>
+        <input type="text" asp-for="UserName" />
+        <!-- Display validation message for the username field -->
+        <span asp-validation-for="UserName" class="text-danger"></span>
 
-<form asp-action="Signup">
-    <label>Username:</label>
-    <input type="text" asp-for="UserName" />
-    <!-- Display validation message for the username field -->
-    <span asp-validation-for="UserName" class="text-danger"></span>
-    <br/>
 
-    <label>Email:</label>
-    <input type="email" asp-for="Email" />
-    <!-- Display validation message for the email field -->
-    <span asp-validation-for="Email" class="text-danger"></span>
-    <br/>
+        <label>Email:</label>
+        <input type="email" asp-for="Email" />
+        <!-- Display validation message for the email field -->
+        <span asp-validation-for="Email" class="text-danger"></span>
 
-    <label>Password:</label>
-    <input type="password" asp-for="Password"/>
-    <span asp-validation-for="Password" class="text-danger"></span>
-    <br/>
-    
-    <label>Repeat password:</label>
-    <input type="password" asp-for="ConfirmPassword"/>
-    <!-- Display validation message for the Name field -->
-    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
 
-    <br/>
-    <input type="submit" value="Submit"/>
+        <label>Password:</label>
+        <input type="password" asp-for="Password"/>
+        <span asp-validation-for="Password" class="text-danger"></span>
 
-</form>
+        
+        <label>Repeat password:</label>
+        <input type="password" asp-for="ConfirmPassword"/>
+        <!-- Display validation message for the Name field -->
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
 
-<a asp-action="ReactivateAccount">Reactivate an inactive account.</a>
+        <button type="submit" value="Submit" class="btn btn-brand shadow-light">Sign Up!</button>
+
+    </form>
+        <div class="d-flex justify-content-center gap-2 pt-3 pt-lg-4">
+            <a asp-action="ReactivateAccount" class="std-link">Reactivate an inactive account.</a>
+        </div>
+    </section>
+</div>
