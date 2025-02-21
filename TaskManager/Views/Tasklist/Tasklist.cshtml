@@ -4,20 +4,6 @@
     ViewData["Title"] = "Tasklist Details";
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["ErrorMessage"]
-    </div>
-}
-
 <div class="bg-white py-3 py-lg-4">
     <section class="std-container row">
         <div class="col-lg-7">
@@ -213,6 +199,26 @@
 
     </section>
 </div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-check clr-primary"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-xmark clr-accent-warm"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    </div>
+}
 
 @functions {
     public string GetStatusClass(TaskManager.Models.TaskStatus status)

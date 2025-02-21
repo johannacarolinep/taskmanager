@@ -20,20 +20,6 @@
             </h2>
             <a asp-action="Create" class="link-btn btn-brand shadow-light">Create New Tasklist!</a>
         </div>
-
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="alert alert-success">
-                @TempData["SuccessMessage"]
-            </div>
-        }
-
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-success">
-                @TempData["ErrorMessage"]
-            </div>
-        }
     </section>
 </div>
 
@@ -105,11 +91,33 @@
         }
     }
 }
+</section>
 
 @if (ViewBag.error != null) {
-    <div class="alert alert-danger">
-        @ViewBag.error
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-xmark clr-accent-warm"></i> @ViewBag.error
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     </div>
 }
 
-</section>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-check clr-primary"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-xmark clr-accent-warm"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    </div>
+}

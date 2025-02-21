@@ -4,13 +4,6 @@
     ViewData["Title"] = "Reactivate Account";
 }
 
-@if (TempData["ReactivatePrompt"] != null)
-{
-    <div class="alert alert-info">
-        @TempData["ReactivatePrompt"]
-    </div>
-}
-
 <div class="d-flex flex-grow-1 justify-content-center align-items-center">
     <section class="std-container card bg-white p-4 p-lg-5 my-3">
         <h1 class="clr-accent-bright">Reactivate an existing account <i class="fa-solid fa-key"></i></i></h1>
@@ -36,3 +29,12 @@
     </section>
 </div>
 
+@if (TempData["ReactivatePrompt"] != null)
+{
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-exclamation clr-accent-bright"></i> @TempData["ReactivatePrompt"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    </div>
+}

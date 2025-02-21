@@ -67,6 +67,10 @@ h6 {
   font-size: 0.9em;
 }
 
+.txt-bigger {
+  font-size: 1.1em;
+}
+
 /* -------------------------------- SHAPES AND SIZES */
 
 .round {
@@ -311,6 +315,16 @@ h6 {
   margin-bottom: 0;
 }
 
+.alert-container {
+  position: fixed;
+  top: 58px;
+  width: 100%;
+  z-index: 1000;
+}
+
+.alert {
+  opacity: 0.95;
+}
 
 @media (min-width: 768px) {
   html {
@@ -321,6 +335,18 @@ h6 {
   .std-container-md {
     width: 85%;
     margin: 0 auto;
+  }
+
+  .alert-container {
+    top: 62.59px;
+    width: 85%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .alert {
+    max-width: 300px;
+    border: 0.5px solid #ededed;
   }
 
   .w-md-30 {
@@ -346,6 +372,12 @@ h6 {
     width: 80%;
     max-width: 1100px;
     margin: 0 auto;
+  }
+
+  .alert-container {
+    top: 64.59px;
+    width: 80%;
+    max-width: 1100px;
   }
 
   .fs-lg-smaller {

@@ -1,19 +1,5 @@
 @model TaskManager.ViewModels.LoginViewModel
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["ErrorMessage"]
-    </div>
-}
-
 <div class="d-flex flex-grow-1 justify-content-center align-items-center">
     <section class="std-container card bg-white p-4 p-lg-5 my-3">
         <h1 class="clr-accent-bright">Log in <i class="fa-solid fa-user-lock"></i></i></h1>
@@ -38,3 +24,23 @@
         </div>
     </section>
 </div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-check clr-primary"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-xmark clr-accent-warm"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    </div>
+}

@@ -6,19 +6,6 @@
         <h2><span class="lg-smaller">Manage your account settings.</span></h2>
     </section>
 </div>
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["SuccessMessage"]
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["ErrorMessage"]
-        </div>
-    }
 
 <div class="std-container py-3 py-lg-5">
 <div class="bg-white p-3 p-md-4 p-lg-5 card shadow-dark">
@@ -125,3 +112,23 @@
 </div>
 
 </div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-check clr-primary"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-xmark clr-accent-warm"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    </div>
+}
