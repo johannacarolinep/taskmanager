@@ -4,7 +4,7 @@
     ViewData["Title"] = "My invitations";
 }
 
-<h1>You have been invited to the following tasklists:</h1>
+
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -20,45 +20,54 @@
     </div>
 }
 
-@if (!Model.Any()) {
-    <p>No results found</p>
-} else {
-    @foreach (var tasklist in Model) {
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">@tasklist.Title</h5>
-            <p class="card-text">@tasklist.Description</p>
-            <p class="card-text">Created on: @tasklist.CreatedAt.ToShortDateString()</p>
-            <p class="card-text">Role: @tasklist.UserRole</p>
-
-            <div class="contributors">
-                @if (tasklist.Contributors.Count > 0) {
-                    // Calculate how many contributors to display
-                    var displayCount = Math.Min(tasklist.Contributors.Count, 3);
-
-                    // Loop through the contributors and display their images
-                    for (int i = 0; i < displayCount; i++) {
-                        var contributor = tasklist.Contributors[i];
-                        <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="30" title="@contributor.UserName" />
-                    }
-
-                    // If there are more than 3 contributors, display the count of additional users
-                    if (tasklist.Contributors.Count > 3) {
-                        var otherContributorsCount = tasklist.Contributors.Count - 3;
-                        <span class="other-count">+ @otherContributorsCount others</span>
-                    }
-                }
+<section class="std-container">
+    @if (!Model.Any()) {
+        <h1 class="mt-3">You have no pending invitations</h1>
+    } else {
+        <h1 class="mt-3">You have been invited to the following tasklists:</h1>
+        @foreach (var tasklist in Model) {
+            <div class="card my-3 shadow-dark">
+                <div class="card-body row">
+                    <div class="card-text-blk col-md-10">
+                        <h3 class="card-title">@tasklist.Title</h3>
+                        <p class="card-text">@tasklist.Description <span class="fw-lighter">(Created @tasklist.CreatedAt.ToShortDateString())</span></p>
+                        <p class="cart-text">Invited as <span class="fw-bold">@tasklist.UserRole</span></p>
+                        <div class="contributors d-flex">
+                            @if (tasklist.Contributors.Count <= 4) {
+                                @foreach (var contributor in tasklist.Contributors) {
+                                    <div class="d-flex round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="@contributor.UserName">
+                                        <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="40" class="cover round" />
+                                    </div>
+                                }
+                            } else {
+                                // Show the first 3 contributors
+                                var firstThreeContributors = tasklist.Contributors.Take(3).ToList();
+                                foreach (var contributor in firstThreeContributors) {
+                                    <div class="d-flex round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="@contributor.UserName">
+                                        <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="40" class="cover round" />
+                                    </div>
+                                }
+                                // Show current user's image first and count remaining
+                                var otherContributorsCount = tasklist.Contributors.Count - 3;
+                                <div class="d-flex justify-content-center align-items-center w-40 round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="+ @otherContributorsCount other users">
+                                    <span class="other-count fw-bold">+@otherContributorsCount</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-2 mt-3 mt-md-0 d-flex flex-column gap-2">
+                        <form asp-action="AcceptInvite" method="post" class="d-flex flex-grow">
+                            <input type="hidden" name="listId" value="@tasklist.Id" />
+                            <button type="submit" class="btn btn-brand shadow-light w-100">Accept</button>
+                        </form>
+                        <form asp-action="DeclineInvite" method="post" class="d-flex flex-grow">
+                            <input type="hidden" name="listId" value="@tasklist.Id" />
+                            <button type="submit" class="btn btn-red shadow-light w-100">Decline</button>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <form asp-action="AcceptInvite" method="post" style="display: inline;">
-                <input type="hidden" name="listId" value="@tasklist.Id" />
-                <button type="submit" class="btn btn-primary">Accept</button>
-            </form>
-            <form asp-action="DeclineInvite" method="post" style="display: inline;">
-                <input type="hidden" name="listId" value="@tasklist.Id" />
-                <button type="submit" class="btn btn-primary">Decline</button>
-            </form>
-
-        </div>
-    </div>
+        }
     }
-}
+
+</section>
