@@ -11,60 +11,62 @@
             <strong>List owner: @(Model.CurrentUserRole == UserListRole.Owner ? "You" : @Model.Owner.Username)</strong>
             <img src="@Model.Owner.Image" alt="@Model.Owner.Username" style="width: 30px; height: 30px; border-radius: 50%;" />
         </div>
-        <form asp-action="UpdateRoles" method="post" class="std-form">
-            <input type="hidden" asp-for="ListId" />
-            <input type="hidden" asp-for="ListTitle" />
-            <input type="hidden" asp-for="Owner.ListUserId" />
-            <input type="hidden" asp-for="Owner.UserId" />
-            <input type="hidden" asp-for="Owner.Username" />
-            <input type="hidden" asp-for="Owner.Image" />
-            <input type="hidden" asp-for="Owner.Role" />
-            <div class="table-responsive-sm">
-            <table class="table align-middle role-tbl">
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Current Role</th>
-                        <th>New Role</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.ListUsers != null && Model.ListUsers.Any()) {
+        @if (Model.ListUsers != null && Model.ListUsers.Any()) {
+            <form asp-action="UpdateRoles" method="post" class="std-form">
+                <input type="hidden" asp-for="ListId" />
+                <input type="hidden" asp-for="ListTitle" />
+                <input type="hidden" asp-for="Owner.ListUserId" />
+                <input type="hidden" asp-for="Owner.UserId" />
+                <input type="hidden" asp-for="Owner.Username" />
+                <input type="hidden" asp-for="Owner.Image" />
+                <input type="hidden" asp-for="Owner.Role" />
+                <div class="table-responsive-sm">
+                <table class="table align-middle role-tbl">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Current Role</th>
+                            <th>New Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            @for (int i = 0; i < Model.ListUsers.Count; i++) {
+                                var contributor = Model.ListUsers[i];
+                                @* if (contributor.Username == Model.Owner.Username) continue; *@
+                                <tr>
+                                    <td>
+                                        <div class="d-flex flex-column gap-1 flex-md-row align-items-md-center">
+                                        <img src="@contributor.Image" alt="@contributor.Username" style="width: 30px; height: 30px; border-radius: 50%;" />
+                                        <span>
+                                            @(contributor.Username == User.Identity.Name ? "You" : contributor.Username)
+                                        </span>
+                                        </div>
+                                    </td>
+                                    <td>@contributor.Role</td>
+                                    <td>
+                                        <input type="hidden" asp-for="ListUsers[@i].ListUserId" /> <!-- Hidden field for ListUserId -->
+                                        <input type="hidden" asp-for="ListUsers[@i].UserId" />
+                                        <input type="hidden" asp-for="ListUsers[@i].Username" />
+                                        <input type="hidden" asp-for="ListUsers[@i].Image" />
+                                        <select asp-for="ListUsers[@i].Role" class="form-control">
+                                            <option value="Admin" selected="@(contributor.Role == "Admin")">Admin</option>
+                                            <option value="Contributor" selected="@(contributor.Role == "Contributor")">Contributor</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
+                        
+                    </tbody>
+                </table>
+                </div>
 
-                        @for (int i = 0; i < Model.ListUsers.Count; i++) {
-                            var contributor = Model.ListUsers[i];
-                            @* if (contributor.Username == Model.Owner.Username) continue; *@
-                            <tr>
-                                <td>
-                                    <div class="d-flex flex-column gap-1 flex-md-row align-items-md-center">
-                                    <img src="@contributor.Image" alt="@contributor.Username" style="width: 30px; height: 30px; border-radius: 50%;" />
-                                    <span>
-                                        @(contributor.Username == User.Identity.Name ? "You" : contributor.Username)
-                                    </span>
-                                    </div>
-                                </td>
-                                <td>@contributor.Role</td>
-                                <td>
-                                    <input type="hidden" asp-for="ListUsers[@i].ListUserId" /> <!-- Hidden field for ListUserId -->
-                                    <input type="hidden" asp-for="ListUsers[@i].UserId" />
-                                    <input type="hidden" asp-for="ListUsers[@i].Username" />
-                                    <input type="hidden" asp-for="ListUsers[@i].Image" />
-                                    <select asp-for="ListUsers[@i].Role" class="form-control">
-                                        <option value="Admin" selected="@(contributor.Role == "Admin")">Admin</option>
-                                        <option value="Contributor" selected="@(contributor.Role == "Contributor")">Contributor</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-            </div>
-
-            <div class="d-flex justify-content-end gap-2">
-                <a asp-controller="Tasklist" asp-action="Tasklist" asp-route-listId=@Model.ListId class="btn link-btn shadow-light">Cancel</a>
-                <button type="submit" class="btn btn-bright shadow-light">Update Roles</button>        
-            </div>
-        </form>
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-controller="Tasklist" asp-action="Tasklist" asp-route-listId=@Model.ListId class="btn link-btn shadow-light">Cancel</a>
+                    <button type="submit" class="btn btn-bright shadow-light">Update Roles</button>        
+                </div>
+            </form>
+        } else {
+            <p>You are the sole contributor to this tasklist. There are no roles to update. <a asp-controller="Tasklist" asp-action="Tasklist" asp-route-listId=@Model.ListId class="brand-link fw-bold">Go back >></a></p>
+        }
     </section>
 </div>

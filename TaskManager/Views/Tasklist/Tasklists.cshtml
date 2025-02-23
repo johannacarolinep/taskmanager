@@ -24,16 +24,21 @@
 </div>
 
 <section class="std-container my-3 py-3">
-<h2>Your tasklists</h2>
-<!-- Sorting Links -->
-<div>
-    <a class="btn rounded-pill bg-brand me-1 text-white shadow-dark" asp-action="Tasklists" asp-route-sortOrder="title" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Title</a>
-    <a class="btn rounded-pill bg-brand text-white shadow-dark" asp-action="Tasklists" asp-route-sortOrder="date" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Creation Date</a>
+<div class="d-flex align-items-center mb-3">
+    <h2 class="d-inline-block mb-0">Your tasklists</h2>
+    <a asp-action="Create" data-bs-toggle="tooltip" data-bs-title="Create new tasklist" class="link-btn btn-bright shadow-dark ms-2 p-0 px-2 fs-4">
+        <i class="fa-solid fa-plus"></i>
+    </a>
 </div>
 
 @if (!Model.Any()) {
-    <p>No results found</p>
+    <p class="my-3">You have no tasklists currently. Create tasklists, or accept invitations, to see all tasklists here.</p>
 } else {
+    <!-- Sorting Links -->
+    <div class="d-flex justify-content-start flex-wrap gap-2">
+        <a class="btn rounded-pill bg-brand text-white shadow-dark" asp-action="Tasklists" asp-route-sortOrder="title" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Title</a>
+        <a class="btn rounded-pill bg-brand text-white shadow-dark" asp-action="Tasklists" asp-route-sortOrder="date" asp-route-searchString="@ViewBag.SearchString" asp-route-filter="@ViewBag.Filter">Sort by Creation Date</a>
+    </div>
     @foreach (var tasklist in Model) {
         if (tasklist.IsActive == true) {
             <div class="card my-3 shadow-dark">
@@ -78,14 +83,39 @@
                 </div>
             </div>
         } else {
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">@tasklist.Title</h5>
-                    <p class="card-text">@tasklist.Description</p>
-                    <p class="card-text">Created on: @tasklist.CreatedAt.ToShortDateString()</p>
-                    <p class="card-text">Role: @tasklist.UserRole</p>
-
-                    <p class="card-text text-danger">This list has been deleted. <a asp-controller="ListUser" asp-action="LeaveList" asp-route-listId="@tasklist.Id">Leave tasklist</a></p>
+            // Inactive tasklist
+            <div class="card my-3 shadow-dark">
+                <div class="card-body row">
+                    <div class="card-text-blk col-md-10">
+                        <h3 class="card-title text-muted">@tasklist.Title <span class="badge rounded-pill badge-bright">@tasklist.UserRole</span></h3>
+                        <p class="card-text text-muted">@tasklist.Description <span class="fw-lighter">(Created @tasklist.CreatedAt.ToShortDateString())</span></p>
+                        <p class="card-text clr-accent-warm">This list has been deleted. Leave the list to remove it from this page.</p>
+                    <div class="contributors d-flex">
+                        @if (tasklist.Contributors.Count <= 4) {
+                            @foreach (var contributor in tasklist.Contributors) {
+                                <div class="d-flex round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="@contributor.UserName">
+                                    <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="40" class="cover round" />
+                                </div>
+                            }
+                        } else {
+                            // Show the first 3 contributors
+                            var firstThreeContributors = tasklist.Contributors.Take(3).ToList();
+                            foreach (var contributor in firstThreeContributors) {
+                                <div class="d-flex round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="@contributor.UserName">
+                                    <img src="@contributor.ProfileImage" alt="@contributor.UserName" height="40" class="cover round" />
+                                </div>
+                            }
+                            // Show current user's image first and count remaining
+                            var otherContributorsCount = tasklist.Contributors.Count - 3;
+                            <div class="d-flex justify-content-center align-items-center w-40 round me-1 bg-neutral border-neutral" data-bs-toggle="tooltip" data-bs-title="+ @otherContributorsCount other users">
+                                <span class="other-count fw-bold">+@otherContributorsCount</span>
+                            </div>
+                        }
+                    </div>
+                    </div>
+                    <div class="tl-controls col-md-2 d-flex flex-column">
+                        <a class="link-btn m-1 shadow-light" asp-controller="ListUser" asp-action="LeaveList" asp-route-listId="@tasklist.Id" data-bs-toggle="tooltip" data-bs-title="Leave tasklist"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+                    </div>
                 </div>
             </div>
         }

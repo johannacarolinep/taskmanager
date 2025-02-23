@@ -246,6 +246,15 @@ h6 {
   color: var(--clr-dark);
 }
 
+.brand-link {
+  text-decoration: none;
+  color: var(--clr-brand);
+}
+
+.brand-link:hover {
+  color: var(--clr-btn-brand-dark);
+}
+
 
 .shadow-dark {
   box-shadow: 5px 5px 8px #efeded;

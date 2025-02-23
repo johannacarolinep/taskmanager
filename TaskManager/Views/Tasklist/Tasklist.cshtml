@@ -18,6 +18,9 @@
             <div>
             @if (@Model.UserRole == "Owner" || @Model.UserRole == "Admin") {
                 <a asp-controller="ListUser" asp-action="Invite" asp-route-listId="@Model.TasklistId" asp-route-listTitle="@Model.Title" asp-route-username="@User.Identity.Name" class="btn link-btn btn-brand mb-2 shadow-dark">Invite <i class="fa-regular fa-envelope ms-2"></i></a>
+                
+            }
+            @if ((@Model.UserRole == "Owner" || @Model.UserRole == "Admin") && Model.Contributors.Count > 1) {
                 <a asp-controller="ListUser" asp-action="UpdateRoles" asp-route-listId="@Model.TasklistId" asp-route-listTitle="@Model.Title" class="btn link-btn btn-bright mb-2 shadow-dark">Update roles <i class="fa-solid fa-unlock-keyhole ms-2"></i></a>
             }
             @if (@Model.UserRole == "Owner" && Model.Contributors.Count > 1) {
@@ -132,7 +135,7 @@
 <!-- List of tasks -->
         <div class="card bg-neutral p-2 p-md-3">
         @if (Model.Tasks.Count == 0) {
-            <p>No tasks available for this tasklist.</p>
+            <p>No results...</p>
         }   else {
             foreach (var task in Model.Tasks) {
                 <div class="card shadow-dark mb-3 pb-2 pb-md-3 @GetStatusClass(task.Status)">
