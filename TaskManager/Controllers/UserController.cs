@@ -146,6 +146,13 @@ namespace TaskManager.Controllers
                     await _userManager.UpdateAsync(user);
                 }
 
+                // Check if user has pending invitations
+                int invitationsCount = _listUserMethods.GetPendingInvitationsCount(user.Id);
+                if (invitationsCount > 0) {
+                    TempData["InvitationsCount"] = invitationsCount;
+                }
+
+
                 return RedirectToAction("Tasklists", "Tasklist");
             }
 

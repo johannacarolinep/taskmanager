@@ -128,7 +128,8 @@ public class ListUserMethods {
                     -- Retrieve the current user's role specifically
                     (SELECT Role FROM Tbl_ListUser WHERE ListId = TL.Id AND UserId = @UserId) AS UserRole,
                     U.UserName AS ContributorName,
-                    U.Image AS ContributorImage
+                    U.Image AS ContributorImage,
+                    LU.IsActive -- ListUser status
                 FROM 
                     Tbl_Tasklist TL
                 INNER JOIN 
@@ -141,7 +142,7 @@ public class ListUserMethods {
                         FROM Tbl_ListUser 
                         WHERE UserId = @UserId AND InvitationStatus = 'pending'
                     )
-                    AND (LU.UserId IS NULL OR LU.IsActive = 1)  -- Include null for invite emails or active users only
+                    -- AND (LU.UserId IS NULL OR LU.IsActive = 1)  -- Include null for invite emails or active users only
                 ORDER BY 
                     TL.Id, U.UserName;";
 
@@ -170,9 +171,11 @@ public class ListUserMethods {
                             tasklists.Add(currentTasklist);
                             lastTasklistId = tasklistId;
                         }
-
+                        // Check if the contributor is active before adding
+                        bool isActive = !reader.IsDBNull(8) && reader.GetBoolean(8);  // Column index 8 is LU.IsActive
+                        
                         // Add contributor data to the current tasklist
-                        if (currentTasklist != null && !reader.IsDBNull(6)) {
+                        if (currentTasklist != null && !reader.IsDBNull(6) && isActive) {
                             var contributor = new ContributorModel {
                                 UserName = reader.GetString(6),
                                 ProfileImage = reader.IsDBNull(7) ? null : reader.GetString(7)
@@ -185,6 +188,22 @@ public class ListUserMethods {
         }
 
         return tasklists;
+    }
+
+
+    public int GetPendingInvitationsCount(int userId) {
+        using (SqlConnection dbConnection = GetOpenConnection()) {
+            string sql = @"
+                SELECT COUNT(*) 
+                FROM Tbl_ListUser 
+                WHERE UserId = @UserId AND InvitationStatus = 'pending';";
+
+            using (SqlCommand dbCommand = new SqlCommand(sql, dbConnection)) {
+                dbCommand.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                
+                return (int)dbCommand.ExecuteScalar();
+            }
+        }
     }
 
 

@@ -121,3 +121,13 @@
     </div>
     </div>
 }
+
+@if (TempData["InvitationsCount"] != null)
+{
+    <div class="alert-container p-3 pe-md-0 d-flex justify-content-end">
+    <div class="alert alert-light alert-dismissible fade show shadow-dark" role="alert">
+        <i class="fa-solid fa-exclamation clr-primary"></i> You have <span class="fw-bold">@TempData["InvitationsCount"]</span> pending invitations.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    </div>
+}
