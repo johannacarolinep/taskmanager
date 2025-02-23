@@ -1,27 +1,32 @@
 @model TaskManager.ViewModels.TransferOwnershipViewModel
 
-<h2>Transfer Ownership of @Model.ListTitle</h2>
+<div class="d-flex flex-grow-1 justify-content-center align-items-center">
+    <section class="std-container card bg-white p-3 p-lg-4 my-3">
+        <h1>Transfer Ownership of <span class="clr-primary">@Model.ListTitle</span> <i class="fa-solid fa-crown"></i></h1>
+        <form asp-action="TransferOwnership" class="std-form" method="post">
+            <input type="hidden" asp-for="ListId" />
+            <input type="hidden" asp-for="ListTitle" />
 
-<form asp-action="TransferOwnership" method="post">
-    <input type="hidden" asp-for="ListId" />
-    <input type="hidden" asp-for="ListTitle" />
+            <div class="form-group">
+                <label for="NewOwnerId">Select the new owner:</label>
+                <select asp-for="NewOwnerId" asp-items="@(new SelectList(Model.Contributors, "UserId", "Username"))" class="form-control" required>
+                    <option value="">-- Select a User --</option>
+                </select>
+            </div>
 
-    <div class="form-group">
-        <label for="NewOwnerId">Select the new owner:</label>
-        <select asp-for="NewOwnerId" asp-items="@(new SelectList(Model.Contributors, "UserId", "Username"))" class="form-control" required>
-            <option value="">-- Select a User --</option>
-        </select>
-    </div>
+            <div class="form-group form-check">
+                <input type="checkbox" asp-for="ConfirmTransfer" class="form-check-input" required />
+                <label asp-for="ConfirmTransfer" class="form-check-label">
+                    I understand that I will be downgraded to Admin and transfer ownership to the selected user.
+                </label>
+            </div>
 
-    <div class="form-group form-check">
-        <input type="checkbox" asp-for="ConfirmTransfer" class="form-check-input" required />
-        <label asp-for="ConfirmTransfer" class="form-check-label">
-            I understand that I will be downgraded to Admin and transfer ownership to the selected user.
-        </label>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Transfer Ownership</button>
-    <a asp-controller="Tasklist" asp-action="Tasklist" asp-route-listId="@Model.ListId" class="btn btn-secondary">Cancel</a>
-
-    <div asp-validation-summary="All" class="text-danger"></div>
-</form>
+            
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-controller="Tasklist" asp-action="Tasklists" class="btn link-btn shadow-light">Cancel</a>
+                <button type="submit" class="btn btn-brand shadow-light">Transfer Ownership</button>
+            </div>
+            <div asp-validation-summary="All" class="clr-accent-warm"></div>
+        </form>
+    </section>
+</div>
