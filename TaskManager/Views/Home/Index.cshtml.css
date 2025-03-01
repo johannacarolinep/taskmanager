@@ -1,0 +1,93 @@
+.hero-title {
+    font-size: clamp(2rem, 12vw, 8.5rem);
+    /* Min 3rem, scales with viewport, max 8.5rem */
+    font-family: var(--ff-primary);
+    white-space: nowrap;
+    /* Prevents wrapping */
+}
+
+
+/* ---------------- HERO TITLE ANIMATION ---------------- */
+
+.hero-title span {
+    display: inline-block;
+    animation: colorShift 10.8s infinite ease-in-out;
+}
+
+/* Keyframes: Mostly primary, accents pass quickly */
+@keyframes colorShift {
+
+    0%,
+    30% {
+        color: var(--clr-primary);
+    }
+
+    /* Primary color most of the time */
+    35% {
+        color: var(--clr-accent--bright);
+        opacity: 0.8;
+    }
+
+    /* Quick accent flash */
+    45% {
+        color: var(--clr-accent--warm);
+        opacity: 1;
+    }
+
+    /* Another quick accent */
+    60%,
+    100% {
+        color: var(--clr-primary);
+    }
+
+    /* Back to primary */
+}
+
+/* Assign delays to each letter */
+.hero-title span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.hero-title span:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.hero-title span:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.hero-title span:nth-child(4) {
+    animation-delay: 0.9s;
+}
+
+.hero-title span:nth-child(5) {
+    animation-delay: 1.2s;
+}
+
+.hero-title span:nth-child(6) {
+    animation-delay: 1.5s;
+}
+
+.hero-title span:nth-child(7) {
+    animation-delay: 1.8s;
+}
+
+.hero-title span:nth-child(8) {
+    animation-delay: 2.1s;
+}
+
+.hero-title span:nth-child(9) {
+    animation-delay: 2.4s;
+}
+
+.hero-title span:nth-child(10) {
+    animation-delay: 2.7s;
+}
+
+.hero-title span:nth-child(11) {
+    animation-delay: 3s;
+}
+
+@media (min-width: 768px) {}
+
+@media (min-width: 998px) {}
