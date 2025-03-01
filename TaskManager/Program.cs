@@ -106,6 +106,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Tasklist}/{action=Tasklists}/");
+    // pattern: "{controller=Tasklist}/{action=Tasklists}/");
+    pattern: "{controller=Home}/{action=Index}/");
 
 app.Run();

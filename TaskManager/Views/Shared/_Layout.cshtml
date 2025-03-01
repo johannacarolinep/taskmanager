@@ -15,7 +15,7 @@
 <body>
     <header class="border-bottom box-shadow bg-white sticky-top">
         <nav class="navbar navbar-expand-lg navbar-toggleable-lg navbar-light std-container">
-                <a class="navbar-brand ms-0" asp-area="" asp-controller="Tasklist" asp-action="Tasklists">TaskManager</a>
+                <a class="navbar-brand ms-0" asp-area="" asp-controller="Home" asp-action="Index">TaskManager</a>
 
                 <!-- Image visible to logged in users -->
                 @if (User.Identity.IsAuthenticated) {
