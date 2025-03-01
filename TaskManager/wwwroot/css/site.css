@@ -149,20 +149,23 @@ h6 {
 
 /* ------------------------------- BUTTONS */
 
+.btn {
+  padding: 0.4rem 0.6rem;
+}
+
 .link-btn {
   text-decoration: none;
   text-align: center;
-  padding: 0.5rem;
   background-color: var(--clr-neutral);
   color: var(--clr-dark);
   border-radius: 6px;
-  /* box-shadow: 5px 5px 3px #fafafa; */
 }
 
 .link-btn:focus,
 .link-btn:active,
 .link-btn:hover {
   color: var(--clr-dark);
+  background-color: var(--clr-neutral-dark);
 }
 
 .btn-red {
