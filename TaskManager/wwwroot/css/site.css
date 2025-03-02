@@ -99,6 +99,10 @@ h6 {
   background-color: var(--clr-accent--bright);
 }
 
+.bg-accent-warm {
+  background-color: var(--clr-accent--warm);
+}
+
 .border-neutral {
   border: 0.5px solid #e4e4e4;
 }
@@ -295,6 +299,16 @@ h6 {
 .std-img-container img {
   display: flex;
   object-fit: cover;
+  width: 100%;
+}
+
+.img-container-fit {
+  display: flex;
+}
+
+.img-container-fit img {
+  display: flex;
+  object-fit: contain;
   width: 100%;
 }
 

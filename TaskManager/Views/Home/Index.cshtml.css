@@ -6,7 +6,6 @@
     /* Prevents wrapping */
 }
 
-
 /* ---------------- HERO TITLE ANIMATION ---------------- */
 
 .hero-title span {
@@ -86,6 +85,30 @@
 
 .hero-title span:nth-child(11) {
     animation-delay: 3s;
+}
+
+.device-sq {
+    aspect-ratio: 1/1;
+    border-radius: 0.3em;
+    max-width: 400px;
+    margin: auto;
+}
+
+.std-list {
+    list-style-position: inside;
+    padding-left: 0;
+}
+
+.std-list li {
+    margin-bottom: 0.3em;
+}
+
+.list-warm li::marker {
+    color: var(--clr-accent--warm);
+}
+
+.list-bright li::marker {
+    color: var(--clr-accent--bright);
 }
 
 @media (min-width: 768px) {}
